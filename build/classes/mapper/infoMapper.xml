@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iotek.ssm.dao.InfoDao">
+	<insert id="addInfo" parameterType="Info">
+		INSERT INTO
+			info(u_id,real_name,sex,age,edu,phone,
+			email,d_id,p_id,politics,last_job,work_year,
+			salary_exp,hobby,readed,type,entryTime,msg)
+		VALUES
+			(#{uId},#{realName},#{sex},#{age},#{edu},#{phone},
+			#{email},#{dept.dId},#{position.pId},#{politics},
+			#{lastJob},#{workYear},#{salaryExp},#{hobby},
+			#{readed},#{type},#{entryTime},#{msg})
+	</insert>
+	
+	<delete id="delInfoById" parameterType="int">
+		DELETE FROM
+			info
+		WHERE
+			i_id=#{iId}
+	</delete>
+	
+	<update id="updateInfo" parameterType="Info">
+		UPDATE
+			info
+		SET
+			u_id=#{uId},
+			real_name=#{realName},
+			sex=#{sex},
+			age=#{age},
+			edu=#{edu},
+			phone=#{phone},
+			email=#{email},
+			d_id=#{dept.dId},
+			p_id=#{position.pId},
+			politics=#{politics},
+			last_job=#{lastJob},
+			work_year=#{workYear},
+			salary_exp=#{salaryExp},
+			hobby=#{hobby},
+			readed=#{readed},
+			type=#{type},
+			entryTime=#{entryTime},
+			msg=#{msg}
+		WHERE
+			i_id=#{iId}
+	</update>
+	
+	<select id="queryAllInfos" resultMap="Info_dept_posi">
+		SELECT 
+			*
+		FROM 
+			info i,department d,position p
+		WHERE
+			i.d_id=d.d_id AND i.p_id=p.p_id
+	</select>	
+	<resultMap type="Info" id="Info_dept_posi">
+		<id property="iId" column="i_id"/>
+		<result property="uId" column="u_id"/>
+		<result property="realName" column="real_name"/>
+		<result property="sex" column="sex"/>
+		<result property="age" column="age"/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+		<result property="" column=""/>
+	</resultMap>
+</mapper>

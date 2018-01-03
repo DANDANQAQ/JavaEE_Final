@@ -1,0 +1,44 @@
+
+
+
+
+	1.3进度：dao+entity+mapping:
+									用户
+									简历+个人信息
+									部门
+									职位
+
+
+
+
+
+
+
+users
+u_id,u_name,password,type
+
+info
+i_id,u_id,real_name,sex,age,edu,phone,email,d_id,p_id,	
+politics,last_job,work_year,salary_exp,hobby,readed,
+type,entryTime,msg
+
+
+wages
+w_id,u_id,basic_wages,overtime_wages,bonus,forfeit,social,real_wages
+
+wages_records
+wr_id,u_id,basic_wages,overtime_wages,bonus,forfeit,social,real_wages,year,month
+
+departments
+d_id,d_name,createTime
+
+positions
+p_id,p_name,d_id,createTime,employees
+
+reward_punishment
+rp_id,u_id,year,month,type,money,msg,status
+
+clocking
+c_id u_id year month day clock_in_time clock_out_time status
+
+招聘
