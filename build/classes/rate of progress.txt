@@ -9,12 +9,12 @@
 		职位
 									
 	1.4	登录注册页面
+		登录跳转 游客页面 简历表 二级联动ing
 
 
 
-
-
-
+interview
+it_id,u_id,i_id,deliver,deliverTime,readed,invited,invitedTime,interview,enroll
 
 users
 u_id,u_name,password,type

@@ -10,10 +10,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.iotek.ssm.dao.DepartmentDao;
 import com.iotek.ssm.dao.InfoDao;
+import com.iotek.ssm.dao.InterviewDao;
 import com.iotek.ssm.dao.PositionDao;
 import com.iotek.ssm.dao.UserDao;
 import com.iotek.ssm.entity.Department;
 import com.iotek.ssm.entity.Info;
+import com.iotek.ssm.entity.Interview;
 import com.iotek.ssm.entity.Position;
 import com.iotek.ssm.entity.User;
 import com.iotek.ssm.util.MyUtil;
@@ -29,6 +31,8 @@ public class Main {
 	private PositionDao positionDao;
 	@Autowired
 	private InfoDao infoDao;
+	@Autowired
+	private InterviewDao interviewDao;
 	@Test
 	public void test() {
 	//	userDao.addUser(new User(0, "dandan", "change941221"));
@@ -61,5 +65,11 @@ public class Main {
 		System.out.println(infos.get(1).getPosition());
 		Info info = infoDao.queryInfoByuId(2);
 		System.out.println(info);
+	}
+	@Test
+	public void test5() {
+	//	int interview = interviewDao.addInterview(new Interview(0, 2, 1, 0, null, 0, 0, null, 0, 0));
+	//	System.out.println(interview);
+		System.out.println(interviewDao.queryAllInterviews().get(0).getInvitedTime());
 	}
 }

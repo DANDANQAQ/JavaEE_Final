@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iotek.ssm.dao.InterviewDao">
+	<insert id="addInterview" parameterType="Interview">
+		INSERT INTO
+			interviews(u_id,i_id,deliver,deliverTime,
+			readed,invited,invitedTime,interview,enroll)
+		VALUES
+			(#{uId},#{iId},#{deliver},#{deliverTime},#{readed},
+			#{invited},#{invitedTime},#{interview},#{enroll})
+	</insert>
+	<delete id="delInterviewById" parameterType="int">
+		DELETE FROM
+			interviews
+		WHERE
+			it_id=#{itId}
+	</delete>
+	
+	<update id="updateInterview" parameterType="Interview">
+		UPDATE
+			interviews
+		SET
+			u_id=#{uId},
+			i_id=#{iId},
+			deliver=#{deliver},
+			deliverTime=#{deliverTime},
+			readed=#{readed},
+			invited=#{invited},
+			invitedTime=#{invitedTime},
+			interview=#{interview},
+			enroll=#{enroll}
+		WHERE
+			it_id=#{itId}
+	</update>
+	
+	<select id="queryAllInterviews" resultType="Interview">
+		SELECT 
+			*
+		FROM 
+			interviews
+	</select>
+	<select id="queryDeliverInterviews" resultType="Interview">
+		SELECT 
+			*
+		FROM 
+			interviews
+		WHERE
+			deliver=1
+	</select>
+	<select id="queryInterviewById" parameterType="int" resultType="Interview">
+		SELECT 
+			*
+		FROM 
+			interviews
+		WHERE
+			it_id=#{itId}
+	</select>
+	<select id="queryInterviewByuId" parameterType="int" resultType="Interview">
+		SELECT 
+			*
+		FROM 
+			interviews
+		WHERE
+			u_id=#{uId}
+	</select>
+</mapper>
