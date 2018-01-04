@@ -20,7 +20,7 @@
 			users
 		SET
 			u_name=#{uName},
-			password=#{password}
+			password=#{password},
 			type=#{type}
 		WHERE
 			u_id=#{uId}

@@ -50,31 +50,44 @@
 		SELECT 
 			*
 		FROM 
-			info i,department d,position p
+			info i,departments d,positions p
 		WHERE
 			i.d_id=d.d_id AND i.p_id=p.p_id
 	</select>	
+	<select id="queryInfoByuId" parameterType="int" resultMap="Info_dept_posi">
+		SELECT 
+			*
+		FROM 
+			info i,departments d,positions p
+		WHERE
+			i.d_id=d.d_id AND i.p_id=p.p_id AND i.u_id=#{uId}
+	</select>
 	<resultMap type="Info" id="Info_dept_posi">
 		<id property="iId" column="i_id"/>
 		<result property="uId" column="u_id"/>
 		<result property="realName" column="real_name"/>
 		<result property="sex" column="sex"/>
 		<result property="age" column="age"/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
-		<result property="" column=""/>
+		<result property="edu" column="edu"/>
+		<result property="phone" column="phone"/>
+		<result property="email" column="email"/>
+		<result property="politics" column="politics"/>
+		<result property="lastJob" column="last_job"/>
+		<result property="workYear" column="work_year"/>
+		<result property="salaryExp" column="salary_exp"/>
+		<result property="hobby" column="hobby"/>
+		<result property="readed" column="readed"/>
+		<result property="type" column="type"/>
+		<result property="entryTime" column="entryTime"/>
+		<result property="msg" column="msg"/>
+		<association property="dept" javaType="Department">
+			<id property="dId" column="d_id"/>
+			<result property="dName" column="d_name"/>
+		</association>
+		<association property="position" javaType="Position">
+			<id property="pId" column="p_id"/>
+			<result property="pName" column="p_name"/>
+			<result property="dId" column="d_id"/>
+		</association>
 	</resultMap>
 </mapper>
