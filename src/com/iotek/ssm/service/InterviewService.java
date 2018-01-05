@@ -11,6 +11,7 @@ public interface InterviewService {
 	
 	public List<Interview> queryAllInterviews();
 	public List<Interview> queryDeliverInterviews();
+	public List<Interview> queryDeliverInterviewsByDept(int dId);
 	public Interview queryInterviewById(int itId);
 	public Interview queryInterviewByuId(int uId);
 }

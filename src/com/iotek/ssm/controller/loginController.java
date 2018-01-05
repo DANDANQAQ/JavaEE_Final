@@ -78,7 +78,34 @@ public class loginController {
 		}
 		return null;
 	}
-	
+	@RequestMapping(value="invitedAjax",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String invitedAjax(Integer uId,String invitedTime) {
+		if(uId == null || invitedTime == null) {
+			return null;
+		}
+		Interview interview = interviewService.queryInterviewByuId(uId);
+		interview.setInvited(1);
+		interview.setInvitedTime(invitedTime);
+		interviewService.updateInterview(interview);
+		return "success";
+	}
+	@RequestMapping(value="findInfoAjax",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String findInfoAjax(Integer uId) {
+		if(uId == null) {
+			return null;
+		}
+		Interview interview = interviewService.queryInterviewByuId(uId);
+		interview.setReaded(1);
+		interviewService.updateInterview(interview);
+		
+		Info info = infoService.queryInfoByuId(uId);
+		info.setReaded(1);
+		infoService.updateInfo(info);
+		String jsonString = JSON.toJSONString(info);
+		return jsonString;
+	}
 	@RequestMapping(value="choiceDept",produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String choiceDept(Integer deptId) {
@@ -90,7 +117,22 @@ public class loginController {
 		String jsonString = JSON.toJSONString(positions);
 		return jsonString;
 	}
-	
+	@RequestMapping(value="changePSW",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String changePSW(String oldpsw,String newpsw,HttpSession session) {
+		User user = (User) session.getAttribute("nowUser");
+		if(user.getPassword().equals(MyUtil.md5(oldpsw))) {
+			user.setPassword(MyUtil.md5(newpsw));
+			boolean res = userService.updateUser(user);
+			if(res) {
+				return "ÐÞ¸Ä³É¹¦";
+			}else {
+				return "ÐÞ¸ÄÊ§°Ü";
+			}
+		}else {
+			return "ÃÜÂë´íÎó";
+		}
+	}
 	@RequestMapping("/register")
 	public String register(Model model,User u) {
 		User user = userService.queryUserByName(u.getuName());
@@ -126,19 +168,29 @@ public class loginController {
 			if(user.getPassword().equals(MyUtil.md5(u.getPassword()))) {
 				int type = user.getType();
 				session.setAttribute("nowUser", user);
+				int uId = user.getuId();
 				session.setAttribute("depts", departmentService.queryAllDepts());
 				if(type == 0) {
+					List<Interview> interviews = interviewService.queryDeliverInterviews();
+					session.setAttribute("interviews", interviews);
 					return "jump/adminJump";
 				}else if(type == 1) {
-					int deliver = interviewService.queryInterviewByuId(user.getuId()).getDeliver();
+					int deliver = interviewService.queryInterviewByuId(uId).getDeliver();
 					if(deliver == 1) {
-						session.setAttribute("info", infoService.queryInfoByuId(user.getuId()));
+						session.setAttribute("info", infoService.queryInfoByuId(uId));
 					}else {
-						session.setAttribute("info", infoService.queryUserInfoByuId(user.getuId()));
+						session.setAttribute("info", infoService.queryUserInfoByuId(uId));
 					}
 					return "jump/userJump";
 				}else if(type == 2) {
 					return "jump/employeeJump";
+				}else if(type == 3) {
+					int dId = infoService.queryInfoByuId(uId).getDept().getdId();
+					List<Interview> interviewsByDept = interviewService.queryDeliverInterviewsByDept(dId);
+					if(interviewsByDept!=null) {
+						session.setAttribute("interviewsByDept", interviewsByDept);
+					}
+					return "jump/deptJump";
 				}else {
 					model.addAttribute("loginMsg", "µÇÂ¼Òì³£");
 					return "loginRegister";
@@ -152,6 +204,10 @@ public class loginController {
 	@RequestMapping("/toAdmin")
 	public String toAdmin() {
 		return "admin/index";
+	}
+	@RequestMapping("/todept")
+	public String todept() {
+		return "dept/index";
 	}
 	@RequestMapping("/toEmployee")
 	public String toEmployee() {

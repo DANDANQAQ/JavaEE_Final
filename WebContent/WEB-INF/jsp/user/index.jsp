@@ -20,16 +20,46 @@
 		$("#index").fadeIn();
 		return false;
 	}
-	function changePSW(){
+	function changePSWpage(){
 		$(".allpage").hide();
-		$("#changePSW").fadeIn();
+		$("#changePSWpage").fadeIn();
 		return false;
+	}
+	function pswValidate(){
+		var newpsw = $("input[name=newpsw]").val();
+		var newpsw2 = $("input[name=newpsw2]").val();
+		if(newpsw==newpsw2){
+			$(".twicePSWmsg").text("通过");
+			$("button[name=changePSWbutton]").attr("disabled",false);
+		}else{
+			$(".twicePSWmsg").text("两次输入不一致");
+			$("button[name=changePSWbutton]").attr("disabled",true);
+		}
+	}
+	function changepsw(){
+		var oldpsw = $("input[name=oldpsw]").val();
+		var newpsw = $("input[name=newpsw]").val();
+		var newpsw2 = $("input[name=newpsw2]").val();
+		if(oldpsw==""||newpsw==""||newpsw2==""){
+			return;
+		}
+		$.ajax({
+			url:"${pageContext.request.contextPath}/user/changePSW",
+			type:"post",
+			data:{oldpsw:oldpsw,newpsw:newpsw},
+			dataType:"text",
+			success:function(data){
+				$(".changePSWmsg").text(data);
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
 	}
 	$(function(){
 		$(".allpage").hide();
 		$("#index").show();
 	})
-	
 	function choiceDept(obj){
 		var $dId = $("select[name=dId]").val();
 		$("option[class=de]").remove();
@@ -51,7 +81,6 @@
 			}
 		})
 	}
-	
 	function validate(){
 		var reg = new RegExp("^[0-9]*$");
 		var age = $("input[name=age]").val();
@@ -93,7 +122,7 @@
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#" onclick="return resume()">查看/修改简历</a></li>
             <li><a href="#">反馈</a></li>
-            <li><a href="#" onclick="return changePSW()">修改密码</a></li>
+            <li><a href="#" onclick="return changePSWpage()">修改密码</a></li>
             <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
           </ul>
         </div>
@@ -104,15 +133,48 @@
 	    <div class="container">
 			<div class="row">
 				<div class="col-lg-8 col-lg-offset-2 centered">
+				
+					<!-- 主界面 -->
 					<div id="index" class="allpage">
 						<img src="${pageContext.request.contextPath}/images/user.png" alt="Stanley">
 						<h1>Hi, ${sessionScope.nowUser.uName}</h1>
 						<p>欢迎登录人力资源管理系统，在这里，你可以投递简历，应聘你喜欢的职位！</p>
 						<p>Please, consider to register to <a href="http://eepurl.com/IcgkX">our newsletter</a> to be updated with our latest themes and freebies. Like always, you can use this theme in any project freely. Share it with your friends.</p>
 					</div>
-					<div id="changePSW" class="allpage">
-						
+					
+					<!-- 修改密码 -->
+					<div id="changePSWpage" class="allpage">
+						<form action="#" onsubmit="return false">
+							<table align="center" border="soild 1px" cellpadding="10px" cellspacing="0">
+								<tr>
+									<th colspan="2" style="text-align:center;">修改密码</th>
+								</tr>
+								<tr>
+									<td>原始密码</td>
+									<td><input type="password" name="oldpsw" placeholder="请输入原始密码" required="required"></td>
+								</tr>
+								<tr>
+									<td>新密码</td>
+									<td><input type="password" name="newpsw" placeholder="请输入新密码" required="required"></td>
+								</tr>
+								<tr>
+									<td>再次输入</td>
+									<td>
+										<input type="password" name="newpsw2" placeholder="请再次输入" required="required" onchange="pswValidate()">
+										<h5 class="twicePSWmsg"></h5>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<input type="submit" class="btn btn-success" value="SUBMIT" name="changePSWbutton" onclick="changepsw()"><br/>
+										<h5 class="changePSWmsg"></h5>
+									</td>
+								</tr>
+							</table>
+						</form>
 					</div>
+					
+					<!-- 简历表 -->
 					<div id="resume" class="allpage">
 						<form action="${pageContext.request.contextPath}/user/saveInterview" method="post" onsubmit="return validate()">
 							<table align="center" border="soild 1px" cellpadding="10px" cellspacing="0">
@@ -165,7 +227,7 @@
 									<td>手机号</td>
 									<td><input type="number" name="phone" placeholder="请输入联系方式" required="required" value="${sessionScope.info.phone}"></td>
 									<td>e-mail</td>
-									<td><input type="text" name="email" placeholder="请输入邮箱" required="required" value="${sessionScope.info.email}"></td>
+									<td><input type="email" name="email" placeholder="请输入邮箱" required="required" value="${sessionScope.info.email}"></td>
 								</tr>
 								<tr>
 									<td>应聘职位</td>

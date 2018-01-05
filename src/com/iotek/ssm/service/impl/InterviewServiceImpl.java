@@ -55,6 +55,11 @@ public class InterviewServiceImpl implements InterviewService {
 	public List<Interview> queryDeliverInterviews() {
 		return interviewDao.queryDeliverInterviews();
 	}
+	
+	@Override
+	public List<Interview> queryDeliverInterviewsByDept(int dId) {
+		return interviewDao.queryDeliverInterviewsByDept(dId);
+	}
 
 	@Override
 	public Interview queryInterviewById(int itId) {

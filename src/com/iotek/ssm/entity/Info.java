@@ -2,9 +2,14 @@ package com.iotek.ssm.entity;
 
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class Info {
+	@JSONField(name="iid")
 	private int iId;
+	@JSONField(name="uid")
 	private int uId;
+	@JSONField(name="realname")
 	private String realName;
 	private String sex;
 	private Integer age;
@@ -14,12 +19,16 @@ public class Info {
 	private Department dept;
 	private Position position;
 	private String politics;
+	@JSONField(name="lastjob")
 	private String lastJob;
+	@JSONField(name="workyear")
 	private Integer workYear;
+	@JSONField(name="salaryexp")
 	private String salaryExp;
 	private String hobby;
 	private int readed;
 	private int type;
+	@JSONField(name="entrytime")
 	private Date entryTime;
 	private String msg;
 	public Info() {
@@ -49,21 +58,27 @@ public class Info {
 		this.entryTime = entryTime;
 		this.msg = msg;
 	}
+	@JSONField(name="iid")
 	public int getiId() {
 		return iId;
 	}
+	@JSONField(name="iid")
 	public void setiId(int iId) {
 		this.iId = iId;
 	}
+	@JSONField(name="uid")
 	public int getuId() {
 		return uId;
 	}
+	@JSONField(name="uid")
 	public void setuId(int uId) {
 		this.uId = uId;
 	}
+	@JSONField(name="realname")
 	public String getRealName() {
 		return realName;
 	}
+	@JSONField(name="realname")
 	public void setRealName(String realName) {
 		this.realName = realName;
 	}
@@ -115,21 +130,27 @@ public class Info {
 	public void setPolitics(String politics) {
 		this.politics = politics;
 	}
+	@JSONField(name="lastjob")
 	public String getLastJob() {
 		return lastJob;
 	}
+	@JSONField(name="lastjob")
 	public void setLastJob(String lastJob) {
 		this.lastJob = lastJob;
 	}
+	@JSONField(name="workyear")
 	public Integer getWorkYear() {
 		return workYear;
 	}
+	@JSONField(name="workyear")
 	public void setWorkYear(Integer workYear) {
 		this.workYear = workYear;
 	}
+	@JSONField(name="salaryexp")
 	public String getSalaryExp() {
 		return salaryExp;
 	}
+	@JSONField(name="salaryexp")
 	public void setSalaryExp(String salaryExp) {
 		this.salaryExp = salaryExp;
 	}
@@ -151,9 +172,11 @@ public class Info {
 	public void setType(int type) {
 		this.type = type;
 	}
+	@JSONField(name="entrytime")
 	public Date getEntryTime() {
 		return entryTime;
 	}
+	@JSONField(name="entrytime")
 	public void setEntryTime(Date entryTime) {
 		this.entryTime = entryTime;
 	}

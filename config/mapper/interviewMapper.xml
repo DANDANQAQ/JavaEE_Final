@@ -47,6 +47,14 @@
 		WHERE
 			deliver=1
 	</select>
+	<select id="queryDeliverInterviewsByDept" parameterType="int" resultType="Interview">
+		SELECT 
+			*
+		FROM 
+			interviews i,info f
+		WHERE
+			i.deliver=1 AND f.d_id=#{dId} AND i.u_id=f.u_id AND i.invited=1
+	</select>
 	<select id="queryInterviewById" parameterType="int" resultType="Interview">
 		SELECT 
 			*
