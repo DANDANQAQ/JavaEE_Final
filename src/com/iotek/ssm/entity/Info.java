@@ -7,7 +7,7 @@ public class Info {
 	private int uId;
 	private String realName;
 	private String sex;
-	private int age;
+	private Integer age;
 	private String edu;
 	private String phone;
 	private String email;
@@ -15,7 +15,7 @@ public class Info {
 	private Position position;
 	private String politics;
 	private String lastJob;
-	private int workYear;
+	private Integer workYear;
 	private String salaryExp;
 	private String hobby;
 	private int readed;
@@ -25,8 +25,8 @@ public class Info {
 	public Info() {
 		super();
 	}
-	public Info(int iId, int uId, String realName, String sex, int age, String edu, String phone, String email,
-			Department dept, Position position, String politics, String lastJob, int workYear, String salaryExp,
+	public Info(int iId, int uId, String realName, String sex, Integer age, String edu, String phone, String email,
+			Department dept, Position position, String politics, String lastJob, Integer workYear, String salaryExp,
 			String hobby, int readed, int type, Date entryTime, String msg) {
 		super();
 		this.iId = iId;
@@ -73,10 +73,10 @@ public class Info {
 	public void setSex(String sex) {
 		this.sex = sex;
 	}
-	public int getAge() {
+	public Integer getAge() {
 		return age;
 	}
-	public void setAge(int age) {
+	public void setAge(Integer age) {
 		this.age = age;
 	}
 	public String getEdu() {
@@ -121,10 +121,10 @@ public class Info {
 	public void setLastJob(String lastJob) {
 		this.lastJob = lastJob;
 	}
-	public int getWorkYear() {
+	public Integer getWorkYear() {
 		return workYear;
 	}
-	public void setWorkYear(int workYear) {
+	public void setWorkYear(Integer workYear) {
 		this.workYear = workYear;
 	}
 	public String getSalaryExp() {
@@ -166,9 +166,10 @@ public class Info {
 	@Override
 	public String toString() {
 		return "Info [iId=" + iId + ", uId=" + uId + ", realName=" + realName + ", sex=" + sex + ", age=" + age
-				+ ", edu=" + edu + ", phone=" + phone + ", email=" + email + ", politics=" + politics + ", lastJob="
-				+ lastJob + ", workYear=" + workYear + ", salaryExp=" + salaryExp + ", hobby=" + hobby + ", readed="
-				+ readed + ", type=" + type + ", entryTime=" + entryTime + ", msg=" + msg + "]";
+				+ ", edu=" + edu + ", phone=" + phone + ", email=" + email + ", dept=" + dept + ", position=" + position
+				+ ", politics=" + politics + ", lastJob=" + lastJob + ", workYear=" + workYear + ", salaryExp="
+				+ salaryExp + ", hobby=" + hobby + ", readed=" + readed + ", type=" + type + ", entryTime=" + entryTime
+				+ ", msg=" + msg + "]";
 	}
 	
 }

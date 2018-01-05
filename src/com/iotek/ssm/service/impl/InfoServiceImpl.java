@@ -56,4 +56,9 @@ public class InfoServiceImpl implements InfoService {
 		return infoDao.queryInfoByuId(uId);
 	}
 
+	@Override
+	public Info queryUserInfoByuId(int uId) {
+		return infoDao.queryUserInfoByuId(uId);
+	}
+
 }

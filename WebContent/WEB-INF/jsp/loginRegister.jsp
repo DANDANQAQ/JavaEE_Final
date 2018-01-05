@@ -11,7 +11,7 @@
 </script>
 </head>
 <body>
-<h1>人力资源管理系统登录注册</h1>
+<h1 style="color:lightblue;">人力资源管理系统登录注册</h1>
 	<div class="container">
 		<div class="login">
 			<h2>登 录</h2>

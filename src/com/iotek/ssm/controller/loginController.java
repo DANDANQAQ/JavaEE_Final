@@ -1,15 +1,25 @@
 package com.iotek.ssm.controller;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
+import com.iotek.ssm.entity.Department;
+import com.iotek.ssm.entity.Info;
+import com.iotek.ssm.entity.Interview;
+import com.iotek.ssm.entity.Position;
 import com.iotek.ssm.entity.User;
 import com.iotek.ssm.service.DepartmentService;
+import com.iotek.ssm.service.InfoService;
+import com.iotek.ssm.service.InterviewService;
 import com.iotek.ssm.service.UserService;
 import com.iotek.ssm.util.MyUtil;
 
@@ -20,11 +30,67 @@ public class loginController {
 	private UserService userService;
 	@Autowired
 	private DepartmentService departmentService;
-	
-	@RequestMapping("loginRegister")
-	public String toLoginRegister() {
-		return "loginRegister";
+	@Autowired
+	private InfoService infoService;
+	@Autowired
+	private InterviewService interviewService;
+	@RequestMapping("saveInterview")
+	public String saveInterview(Model model, Info info, int dId, int pId, HttpSession session) {
+		String realName = info.getRealName();
+		String sex = info.getSex();
+		Integer age = info.getAge();
+		String edu = info.getEdu();
+		String phone = info.getPhone();
+		String email = info.getEmail();
+		Department department = null;
+		Position position = null;
+		String politics = info.getPolitics();
+		String lastJob = info.getLastJob();
+		Integer workYear = info.getWorkYear();
+		String salaryExp = info.getSalaryExp();
+		String hobby = info.getHobby();
+		User user = (User) session.getAttribute("nowUser");
+		int uId = user.getuId();
+		if(dId != 0 && pId != 0) {
+			department = new Department(dId, null, null, null);
+			position = new Position(pId, null, dId, null, null);
+			Interview interview = interviewService.queryInterviewByuId(uId);
+			interview.setDeliver(1);
+			interview.setDeliverTime(new Date());
+			interviewService.updateInterview(interview);
+		}
+		Info infoByuId = infoService.queryUserInfoByuId(uId);
+		int iId = infoByuId.getiId();
+		int type = infoByuId.getType();
+		int readed = infoByuId.getReaded();
+		Date entryTime = infoByuId.getEntryTime();
+		String msg = infoByuId.getMsg();
+		boolean updateInfo = infoService.updateInfo(new Info(iId, uId, realName, sex, age, edu, phone, email, department, position, politics, lastJob, workYear, salaryExp, hobby, readed, type, entryTime, msg));
+		if(updateInfo) {
+			int deliver = interviewService.queryInterviewByuId(uId).getDeliver();
+			if(deliver == 1) {
+				Info queryInfoByuId = infoService.queryInfoByuId(uId);
+				session.setAttribute("info", queryInfoByuId);
+			}else {
+				session.setAttribute("info", infoService.queryUserInfoByuId(uId));
+			}
+			return "user/index";
+		}
+		return null;
 	}
+	
+	@RequestMapping(value="choiceDept",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String choiceDept(Integer deptId) {
+		if(deptId == null) {
+			deptId=1;
+		}
+		Department department = departmentService.queryDeptById(deptId);
+		List<Position> positions = department.getPositions();
+		String jsonString = JSON.toJSONString(positions);
+		return jsonString;
+	}
+	
 	@RequestMapping("/register")
 	public String register(Model model,User u) {
 		User user = userService.queryUserByName(u.getuName());
@@ -33,7 +99,18 @@ public class loginController {
 		}else {
 			boolean addUser = userService.addUser(new User(0, u.getuName(), MyUtil.md5(u.getPassword()), 1));
 			if(addUser) {
-				model.addAttribute("registerMsg", "注册成功");
+				int uId = userService.queryUserByName(u.getuName()).getuId();
+				Info info = new Info(0, uId, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 1, null, null);
+				boolean addInfo = infoService.addInfo(info);
+				if(addInfo) {
+					Info infoByuId = infoService.queryUserInfoByuId(uId);
+					int iId = infoByuId.getiId();
+					Interview interview = new Interview(0, uId, iId, 0, null, 0, 0, null, 0, 0);
+					boolean addInterview = interviewService.addInterview(interview);
+					if(addInterview) {
+						model.addAttribute("registerMsg", "注册成功");
+					}
+				}
 			}
 		}
 		return "loginRegister";
@@ -53,6 +130,12 @@ public class loginController {
 				if(type == 0) {
 					return "jump/adminJump";
 				}else if(type == 1) {
+					int deliver = interviewService.queryInterviewByuId(user.getuId()).getDeliver();
+					if(deliver == 1) {
+						session.setAttribute("info", infoService.queryInfoByuId(user.getuId()));
+					}else {
+						session.setAttribute("info", infoService.queryUserInfoByuId(user.getuId()));
+					}
 					return "jump/userJump";
 				}else if(type == 2) {
 					return "jump/employeeJump";
@@ -77,5 +160,9 @@ public class loginController {
 	@RequestMapping("/toUser")
 	public String toUser() {
 		return "user/index";
+	}
+	@RequestMapping("/toLogin")
+	public String toLogin() {
+		return "loginRegister";
 	}
 }

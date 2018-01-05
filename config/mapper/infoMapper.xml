@@ -62,6 +62,14 @@
 		WHERE
 			i.d_id=d.d_id AND i.p_id=p.p_id AND i.u_id=#{uId}
 	</select>
+	<select id="queryUserInfoByuId" parameterType="int" resultMap="Info_dept_posi_user">
+		SELECT 
+			*
+		FROM 
+			info
+		WHERE
+			u_id=#{uId}
+	</select>
 	<resultMap type="Info" id="Info_dept_posi">
 		<id property="iId" column="i_id"/>
 		<result property="uId" column="u_id"/>
@@ -89,5 +97,24 @@
 			<result property="pName" column="p_name"/>
 			<result property="dId" column="d_id"/>
 		</association>
+	</resultMap>
+	<resultMap type="Info" id="Info_dept_posi_user">
+		<id property="iId" column="i_id"/>
+		<result property="uId" column="u_id"/>
+		<result property="realName" column="real_name"/>
+		<result property="sex" column="sex"/>
+		<result property="age" column="age"/>
+		<result property="edu" column="edu"/>
+		<result property="phone" column="phone"/>
+		<result property="email" column="email"/>
+		<result property="politics" column="politics"/>
+		<result property="lastJob" column="last_job"/>
+		<result property="workYear" column="work_year"/>
+		<result property="salaryExp" column="salary_exp"/>
+		<result property="hobby" column="hobby"/>
+		<result property="readed" column="readed"/>
+		<result property="type" column="type"/>
+		<result property="entryTime" column="entryTime"/>
+		<result property="msg" column="msg"/>
 	</resultMap>
 </mapper>

@@ -11,8 +11,18 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/JS/jquery-1.7.2.js"></script>
 <script type="text/javascript">
 	function resume(){
-		$(".allpage").fadeOut();
+		$(".allpage").hide();
 		$("#resume").fadeIn();
+		return false;
+	}
+	function mainpage(){
+		$(".allpage").hide();
+		$("#index").fadeIn();
+		return false;
+	}
+	function changePSW(){
+		$(".allpage").hide();
+		$("#changePSW").fadeIn();
 		return false;
 	}
 	$(function(){
@@ -20,8 +30,51 @@
 		$("#index").show();
 	})
 	
-	function choiceDept(){
-		
+	function choiceDept(obj){
+		var $dId = $("select[name=dId]").val();
+		$("option[class=de]").remove();
+		$.ajax({
+			url:"${pageContext.request.contextPath}/user/choiceDept",
+			type:"get",
+			data:{deptId:$dId},
+			dataType:"JSON",
+			success:function(data){
+				$("select[name=pId]").empty();
+				$.each(data,function(idx,item){
+					$("select[name=pId]").append(
+						"<option value="+item.pid+">"+item.pname+"</option>"
+					)
+				})
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+	}
+	
+	function validate(){
+		var reg = new RegExp("^[0-9]*$");
+		var age = $("input[name=age]").val();
+		if(age<0){
+			alert("年龄不合法，请重新输入");
+			return false;
+		}
+		var phone = $("input[name=phone]").val();
+		if(phone.length != 11){
+			alert("手机号不正确，请重新输入");
+			return false;
+		}
+		var email = $("input[name=email]").val();
+		if(!email.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/)){
+			alert("邮箱格式错误，请重新输入");
+			return false;
+		}
+		var workYear = $("input[name=workYear]").val();
+		if(workYear<0){
+			alert("工作经验不合法，请重新输入");
+			return false;
+		}
+		return true;
 	}
 </script>
 </head>
@@ -34,14 +87,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">人力资源管理系统</a>
+          <a class="navbar-brand" href="#" onclick="return mainpage()">人力资源管理系统</a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#" onclick="return resume()">查看/修改简历</a></li>
             <li><a href="#">反馈</a></li>
-            <li><a href="#">修改密码</a></li>
-            <li><a href="#">退出登录</a></li>
+            <li><a href="#" onclick="return changePSW()">修改密码</a></li>
+            <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
           </ul>
         </div>
       </div>
@@ -57,28 +110,48 @@
 						<p>欢迎登录人力资源管理系统，在这里，你可以投递简历，应聘你喜欢的职位！</p>
 						<p>Please, consider to register to <a href="http://eepurl.com/IcgkX">our newsletter</a> to be updated with our latest themes and freebies. Like always, you can use this theme in any project freely. Share it with your friends.</p>
 					</div>
+					<div id="changePSW" class="allpage">
+						
+					</div>
 					<div id="resume" class="allpage">
-						<form action="" method="post">
+						<form action="${pageContext.request.contextPath}/user/saveInterview" method="post" onsubmit="return validate()">
 							<table align="center" border="soild 1px" cellpadding="10px" cellspacing="0">
 								<tr>
 									<th colspan="4" style="text-align:center;">个人简历</th>
 								</tr>
 								<tr>
 									<td>真实姓名</td>
-									<td><input type="text" name="realName" placeholder="请输入真实姓名" required="required"></td>
+									<td><input type="text" name="realName" placeholder="请输入真实姓名" required="required" value="${sessionScope.info.realName}"></td>
 									<td>性别</td>
-									<td>
-										<input type="radio" name="sex" value="男" checked="checked">男
-										<input type="radio" name="sex" value="女">女
-									</td>
+									<c:choose>
+										<c:when test="${sessionScope.info.sex=='女'}">
+											<td>
+												<input type="radio" name="sex" value="男">男
+												<input type="radio" name="sex" value="女" checked="checked">女
+											</td>
+										</c:when>
+										<c:otherwise>
+											<td>
+												<input type="radio" name="sex" value="男" checked="checked">男
+												<input type="radio" name="sex" value="女">女
+											</td>
+										</c:otherwise>
+									</c:choose>
 								</tr>
 								<tr>
 									<td>年龄</td>
-									<td><input type="number" name="age" placeholder="请输入年龄" required="required"></td>
+									<td><input type="number" name="age" placeholder="请输入年龄" required="required" value="${sessionScope.info.age}"></td>
 									<td>学历</td>
 									<td>
 										<select name="edu">
-											<option value="">学历</option>
+											<c:choose>
+												<c:when test="${empty sessionScope.info.edu}">
+													<option value="">学历</option>
+												</c:when>
+												<c:otherwise>
+													<option value="${sessionScope.info.edu}">${sessionScope.info.edu}</option>
+												</c:otherwise>
+											</c:choose>
 											<option value="中专">中专</option>
 											<option value="高中">高中</option>
 											<option value="大专">大专</option>
@@ -90,26 +163,50 @@
 								</tr>
 								<tr>
 									<td>手机号</td>
-									<td><input type="number" name="phone" placeholder="请输入联系方式" required="required"></td>
+									<td><input type="number" name="phone" placeholder="请输入联系方式" required="required" value="${sessionScope.info.phone}"></td>
 									<td>e-mail</td>
-									<td><input type="text" name="email" placeholder="请输入邮箱" required="required"></td>
+									<td><input type="text" name="email" placeholder="请输入邮箱" required="required" value="${sessionScope.info.email}"></td>
 								</tr>
 								<tr>
 									<td>应聘职位</td>
 									<td>
-										<select name="dId" onchange="choiceDept()">
-											<option value="0">--部门--</option>
-											<c:forEach items="${requestScope.depts}" var="d">
-												<option value="${d.dId}">${d.dName}</option>
-											</c:forEach>
-										</select>
-										<select name="pId">
-											<option value="0">--职位--</option>
-										</select>
+										<c:choose>
+											<c:when test="${empty sessionScope.info.dept}">
+												<select name="dId" onchange="choiceDept()">
+													<option value="0" class="de">--部门--</option>
+													<c:forEach items="${sessionScope.depts}" var="d">
+														<option value="${d.dId}">${d.dName}</option>
+													</c:forEach>
+												</select>
+												<select name="pId">
+													<option value="0">--职位--</option>
+												</select>
+											</c:when>
+											<c:otherwise>
+												<select name="dId" onchange="choiceDept()">
+													<c:forEach items="${sessionScope.depts}" var="d">
+														<c:choose>
+															<c:when test="${sessionScope.info.dept.dId==d.dId}">
+																<option value="${d.dId}" selected="selected">${d.dName}</option>
+															</c:when>
+															<c:otherwise>
+																<option value="${d.dId}">${d.dName}</option>
+															</c:otherwise>
+														</c:choose>
+													</c:forEach>
+												</select>
+												<select name="pId">
+													<option value="${sessionScope.info.position.pId}">${sessionScope.info.position.pName}</option>
+												</select>
+											</c:otherwise>
+										</c:choose>
 									</td>
 									<td>政治面貌</td>
 									<td>
 										<select name="politics">
+											<c:if test="${not empty sessionScope.info.politics}">
+												<option value="${sessionScope.info.politics}">${sessionScope.info.politics}</option>
+											</c:if>
 											<option value="普通群众">普通群众</option>
 											<option value="共青团员">共青团员</option>
 											<option value="共产党员">共产党员</option>
@@ -117,15 +214,18 @@
 									</td>
 								</tr>
 								<tr>
-									<td>上分工作</td>
-									<td><input type="text" name="lastJob" placeholder="请输入工作名称"></td>
+									<td>上份工作</td>
+									<td><input type="text" name="lastJob" placeholder="请输入工作名称" required="required" value="${sessionScope.info.lastJob}"></td>
 									<td>工作经验</td>
-									<td><input type="number" name="workYear" placeholder="请输入几年工作经验"></td>
+									<td><input type="number" name="workYear" placeholder="请输入几年工作经验" required="required" value="${sessionScope.info.workYear}"></td>
 								</tr>
 								<tr>
 									<td>期望薪资</td>
 									<td>
 										<select name="salaryExp">
+											<c:if test="${not empty sessionScope.info.salaryExp}">
+												<option value="${sessionScope.info.salaryExp}">${sessionScope.info.salaryExp}</option>
+											</c:if>
 											<option value="2000-3000">2000-3000</option>
 											<option value="3000-4000">3000-4000</option>
 											<option value="4000-6000">4000-6000</option>
@@ -134,7 +234,7 @@
 										</select>
 									</td>
 									<td>兴趣爱好</td>
-									<td><input type="text" name="hobby" placeholder="请输入兴趣爱好"></td>
+									<td><input type="text" name="hobby" placeholder="请输入兴趣爱好" value="${sessionScope.info.hobby}"></td>
 								</tr>
 								<tr>
 									<td colspan="2"><input type="submit" class="btn btn-success" value="SUBMIT"></td>

@@ -11,4 +11,5 @@ public interface InfoService {
 	
 	public List<Info> queryAllInfos();
 	public Info queryInfoByuId(int uId);
+	public Info queryUserInfoByuId(int uId);
 }

@@ -90,5 +90,11 @@ public class Interview {
 	public void setEnroll(int enroll) {
 		this.enroll = enroll;
 	}
+	@Override
+	public String toString() {
+		return "Interview [itId=" + itId + ", uId=" + uId + ", iId=" + iId + ", deliver=" + deliver + ", deliverTime="
+				+ deliverTime + ", readed=" + readed + ", invited=" + invited + ", invitedTime=" + invitedTime
+				+ ", interview=" + interview + ", enroll=" + enroll + "]";
+	}
 	
 }

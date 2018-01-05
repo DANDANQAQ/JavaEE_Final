@@ -49,7 +49,7 @@
 		FROM 
 			departments d,positions p
 		WHERE
-			u_id=#{uId} AND d.d_id=p.d_id
+			d.d_id=#{dId} AND d.d_id=p.d_id
 	</select>
 	
 	<select id="queryUserByName" parameterType="String" resultMap="Dept">
@@ -58,6 +58,6 @@
 		FROM 
 			departments d,positions p
 		WHERE
-			u_name=#{uName} AND d.d_id=p.d_id
+			d.d_name=#{dName} AND d.d_id=p.d_id
 	</select>
 </mapper>

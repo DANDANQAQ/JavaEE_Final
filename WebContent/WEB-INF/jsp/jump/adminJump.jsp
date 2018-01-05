@@ -16,11 +16,11 @@
 	function ok(){
 	   $("form").submit();
 	}
-	window.setTimeout("ok();",5000);
+	window.setTimeout("ok();",3000);
 </script>
 </head>
 <body>
-	登陆成功 <span id = "myspan">5</span> 秒钟后自动跳转... 
+	登陆成功 <span id = "myspan">3</span> 秒钟后自动跳转...  <a href="${pageContext.request.contextPath}/user/toAdmin">点击直接跳转</a>
 	<form action="${pageContext.request.contextPath}/user/toAdmin" method="post"></form>
 </body>
 </html>
