@@ -7,35 +7,37 @@
 		16:00	修改密码  管理员页面  查看面试信息  查看简历  邀请面试
 		
 	1.6 09:00	部门管理界面接受面试信息  录取员工  员工接受面试信息
+		16:00	游客显示招聘信息  管理员查看部门--职位--员工信息   部门职位增删
 
 
-interview
-it_id,u_id,i_id,deliver,deliverTime,readed,invited,invitedTime,interview,enroll
-
-users
-u_id,u_name,password,type
-
-info
-i_id,u_id,real_name,sex,age,edu,phone,email,d_id,p_id,	
-politics,last_job,work_year,salary_exp,hobby,readed,
-type,entryTime,msg
-
-wages
-w_id,u_id,basic_wages,overtime_wages,bonus,forfeit,social,real_wages
-
-wages_records
-wr_id,u_id,basic_wages,overtime_wages,bonus,forfeit,social,real_wages,year,month
-
-departments
-d_id,d_name,createTime
-
-positions
-p_id,p_name,d_id,createTime,employees
-
-reward_punishment
-rp_id,u_id,year,month,type,money,msg,status
-
-clocking
-c_id u_id year month day clock_in_time clock_out_time status
-
-招聘
+	interview
+		it_id,u_id,i_id,deliver,deliverTime,readed,invited,invitedTime,interview,enroll
+	
+	users
+		u_id,u_name,password,type
+	
+	info
+		i_id,u_id,real_name,sex,age,edu,phone,email,d_id,p_id,	
+		politics,last_job,work_year,salary_exp,hobby,readed,
+		type,entryTime,msg
+	
+	wages
+		w_id,u_id,basic_wages,overtime_wages,bonus,forfeit,social,real_wages
+	
+	wages_records
+		wr_id,u_id,basic_wages,overtime_wages,bonus,forfeit,social,real_wages,year,month
+	
+	departments
+		d_id,d_name,createTime
+	
+	positions
+		p_id,p_name,d_id,createTime,employees
+	
+	reward_punishment
+		rp_id,u_id,year,month,type,money,msg,status
+	
+	clocking
+		c_id u_id year month day clock_in_time clock_out_time status
+	
+	employments
+		e_id,d_id,p_id,requirement,deliverTime

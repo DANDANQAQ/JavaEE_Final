@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf8">
 <title>人力资源管理系统登录注册页面</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css" type="text/css" media="all">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css1/style.css" type="text/css" media="all">
 <script type="text/javascript" src="${pageContext.request.contextPath}/JS/jquery-1.7.2.js"></script>
 <script type="text/javascript">
 </script>

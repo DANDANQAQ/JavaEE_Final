@@ -27,10 +27,33 @@
 		SELECT 
 			*
 		FROM 
-			departments d,positions p
-		WHERE
-			d.d_id=p.d_id
+			departments d
+		left join
+			positions p on d.d_id=p.d_id
 	</select>
+	
+	<select id="queryDeptById" parameterType="int" resultMap="Dept">
+		SELECT 
+			*
+		FROM 
+			departments d
+		left join
+			positions p on d.d_id=p.d_id
+		WHERE
+			d.d_id=#{dId}
+	</select>
+	
+	<select id="queryDeptByName" parameterType="String" resultMap="Dept">
+		SELECT 
+			*
+		FROM 
+			departments d
+		left join
+			positions p on d.d_id=p.d_id
+		WHERE
+			d.d_name=#{dName}
+	</select>
+	
 	<resultMap type="Department" id="Dept">
 		<id property="dId" column="d_id"/>
 		<result property="dName" column="d_name"/>
@@ -38,26 +61,6 @@
 		<collection property="positions" ofType="Position">
 			<id property="pId" column="p_id"/>
 			<result property="pName" column="p_name"/>
-			<result property="dId" column="d_id"/>
-			<result property="createTime" column="createTime"/>
 		</collection>
 	</resultMap>
-	
-	<select id="queryDeptById" parameterType="int" resultMap="Dept">
-		SELECT 
-			*
-		FROM 
-			departments d,positions p
-		WHERE
-			d.d_id=#{dId} AND d.d_id=p.d_id
-	</select>
-	
-	<select id="queryUserByName" parameterType="String" resultMap="Dept">
-		SELECT 
-			*
-		FROM 
-			departments d,positions p
-		WHERE
-			d.d_name=#{dName} AND d.d_id=p.d_id
-	</select>
 </mapper>

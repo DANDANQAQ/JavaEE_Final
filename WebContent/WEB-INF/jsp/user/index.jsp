@@ -7,8 +7,37 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf8">
 <title>用户主页</title>
-<link href="${pageContext.request.contextPath}/css/css1/bootstrap.css" rel="stylesheet">
-<link href="${pageContext.request.contextPath}/css/css1/main.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css1/bootstrap.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css1/main.css" rel="stylesheet">
+<style type="text/css">
+	/* Border styles */
+	#table-3 thead, #table-3 tr {
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: rgb(235, 242, 224);
+	}
+	#table-3 {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: rgb(235, 242, 224);
+	}
+	
+	/* Padding and font style */
+	#table-3 td, #table-3 th {
+	padding: 5px 10px;
+	font-size: 20px;
+	font-family: Verdana;
+	color: rgb(149, 170, 109);
+	}
+	
+	/* Alternating background colors */
+	#table-3 tr:nth-child(even) {
+	background: rgb(230, 238, 214)
+	}
+	#table-3 tr:nth-child(odd) {
+	background: #FFF
+	}
+</style>
 <script type="text/javascript" src="${pageContext.request.contextPath}/JS/jquery-1.7.2.js"></script>
 <script type="text/javascript">
 	function resume(){
@@ -24,6 +53,11 @@
 	function changePSWpage(){
 		$(".allpage").hide();
 		$("#changePSWpage").fadeIn();
+		return false;
+	}
+	function recruitment(){
+		$(".allpage").hide();
+		$("#recruitment").fadeIn();
 		return false;
 	}
 	function feedback(){
@@ -132,6 +166,7 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
+            <li><a href="#" onclick="return recruitment()">查看招聘信息</a></li>
             <li><a href="#" onclick="return resume()">查看/修改简历</a></li>
             <li><a href="#" onclick="return feedback()">反馈</a></li>
             <li><a href="#" onclick="return changePSWpage()">修改密码</a></li>
@@ -145,15 +180,36 @@
 	    <div class="container">
 			<div class="row">
 				<div class="col-lg-8 col-lg-offset-2 centered">
-				
 					<!-- 主界面 -->
 					<div id="index" class="allpage">
 						<img src="${pageContext.request.contextPath}/images/user.png" alt="Stanley">
 						<h1>Hi, ${sessionScope.nowUser.uName}</h1>
 						<p>欢迎登录人力资源管理系统，在这里，你可以投递简历，应聘你喜欢的职位！</p>
-						<p>Please, consider to register to <a href="http://eepurl.com/IcgkX">our newsletter</a> to be updated with our latest themes and freebies. Like always, you can use this theme in any project freely. Share it with your friends.</p>
 					</div>
-					
+					<!-- 招聘 -->
+					<div id="recruitment" class="allpage">
+						<table id="table-3" width="800">
+							<tr>
+								<th colspan="4" style="text-align:center;">招聘信息</th>
+							</tr>
+							<tr>
+								<th style="text-align:center;">部门</th>
+								<th style="text-align:center;">职位</th>
+								<th style="text-align:center;">详情</th>
+								<th style="text-align:center;">发布时间</th>
+							</tr>
+							<c:forEach items="${sessionScope.employments}" var="e">
+								<tr>
+									<td style="text-align:center;">${e.department.dName}</td>
+									<td style="text-align:center;">${e.position.pName}</td>
+									<td style="text-align:center;">${e.requirement}</td>
+									<td style="text-align:center;">
+										<f:formatDate value="${e.deliverTime}" pattern="yyyy-MM-dd hh:mm"/>
+									</td>
+								</tr>
+							</c:forEach>
+						</table>
+					</div>
 					<!-- 反馈 -->
 					<div id="feedback" class="allpage">
 						<c:choose>

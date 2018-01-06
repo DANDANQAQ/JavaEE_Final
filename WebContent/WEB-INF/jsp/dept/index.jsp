@@ -7,8 +7,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf8">
 <title>部门主页</title>
-<link href="${pageContext.request.contextPath}/css/css3/bootstrap.css" rel="stylesheet">
-<link href="${pageContext.request.contextPath}/css/css3/main.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css3/bootstrap.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css3/main.css" rel="stylesheet">
 <script type="text/javascript" src="${pageContext.request.contextPath}/JS/jquery-1.7.2.js"></script>
 <script type="text/javascript">
 	$(function(){

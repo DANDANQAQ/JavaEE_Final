@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.iotek.ssm.entity.Department;
+import com.iotek.ssm.entity.Employment;
 import com.iotek.ssm.entity.Info;
 import com.iotek.ssm.entity.Interview;
 import com.iotek.ssm.entity.Position;
 import com.iotek.ssm.entity.User;
 import com.iotek.ssm.service.DepartmentService;
+import com.iotek.ssm.service.EmploymentService;
 import com.iotek.ssm.service.InfoService;
 import com.iotek.ssm.service.InterviewService;
 import com.iotek.ssm.service.UserService;
@@ -34,6 +36,8 @@ public class loginController {
 	private InfoService infoService;
 	@Autowired
 	private InterviewService interviewService;
+	@Autowired
+	private EmploymentService employementService;
 	@RequestMapping("saveInterview")
 	public String saveInterview(Model model, Info info, int dId, int pId, HttpSession session) {
 		String realName = info.getRealName();
@@ -223,6 +227,8 @@ public class loginController {
 						session.setAttribute("interviewFeedback", null);
 					}
 					session.setAttribute("info", infoService.queryInfoByuId(uId));
+					List<Employment> employments = employementService.queryAllEmployments();
+					session.setAttribute("employments", employments);
 					return "jump/userJump";
 				}else if(type == 2) {
 					return "jump/employeeJump";

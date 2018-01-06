@@ -28,9 +28,11 @@
 		SELECT 
 			*
 		FROM 
-			positions p,info i
+			positions p
+		left join 
+			info i on p.p_id=i.p_id AND i.type=2
 		WHERE
-			p.p_id=i.p_id AND p.p_id=#{pId} AND i.type=2
+			p.p_id=#{pId}
 	</select>
 	<resultMap type="Position" id="Posi">
 		<id property="pId" column="p_id"/>
@@ -41,11 +43,6 @@
 			<id property="iId" column="i_id"/>
 			<result property="uId" column="u_id"/>
 			<result property="realName" column="real_name"/>
-			<result property="sex" column="sex"/>
-			<result property="age" column="age"/>
-			<result property="edu" column="edu"/>
-			<result property="phone" column="phone"/>
-			<result property="email" column="email"/>
 		</collection>
 	</resultMap>
 </mapper>

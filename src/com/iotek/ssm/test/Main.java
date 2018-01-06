@@ -1,5 +1,6 @@
 package com.iotek.ssm.test;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -14,10 +15,12 @@ import com.iotek.ssm.dao.InterviewDao;
 import com.iotek.ssm.dao.PositionDao;
 import com.iotek.ssm.dao.UserDao;
 import com.iotek.ssm.entity.Department;
+import com.iotek.ssm.entity.Employment;
 import com.iotek.ssm.entity.Info;
-import com.iotek.ssm.entity.Interview;
 import com.iotek.ssm.entity.Position;
 import com.iotek.ssm.entity.User;
+import com.iotek.ssm.service.EmploymentService;
+import com.iotek.ssm.service.PositionService;
 import com.iotek.ssm.util.MyUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,6 +36,10 @@ public class Main {
 	private InfoDao infoDao;
 	@Autowired
 	private InterviewDao interviewDao;
+	@Autowired
+	private EmploymentService employmentService;
+	@Autowired
+	private PositionService positionService;
 	@Test
 	public void test() {
 	//	userDao.addUser(new User(0, "dandan", "change941221"));
@@ -71,5 +78,25 @@ public class Main {
 	//	int interview = interviewDao.addInterview(new Interview(0, 2, 1, 0, null, 0, 0, null, 0, 0));
 	//	System.out.println(interview);
 		System.out.println(interviewDao.queryAllInterviews().get(0).getInvitedTime());
+	}
+	
+	@Test
+	public void test6() {
+	//	boolean addEmployment = employmentService.addEmployment(new Employment(0, new Department(2, null, null, null), 
+	//			new Position(3, null, 1, null, null), "要求：有项目经验,会摸鱼。薪资：7K-9K", new Date()));
+	//	System.out.println(addEmployment);
+		System.out.println(employmentService.queryAllEmployments());
+	}
+	@Test
+	public void test7() {
+		Position queryPositById = positionService.queryPositById(2);
+		List<Info> employees = queryPositById.getEmployees();
+		if(employees == null) {
+			System.out.println("空");
+		}else {
+			for (Info info : employees) {
+				System.out.println(info);
+			}
+		}
 	}
 }
