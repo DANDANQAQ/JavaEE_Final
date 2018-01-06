@@ -7,8 +7,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf8">
 <title>管理员主页</title>
-<link href="${pageContext.request.contextPath}/css2/bootstrap.css" rel="stylesheet">
-<link href="${pageContext.request.contextPath}/css2/main.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css/css2/bootstrap.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css/css2/main.css" rel="stylesheet">
 <script type="text/javascript" src="${pageContext.request.contextPath}/JS/jquery-1.7.2.js"></script>
 <script type="text/javascript">
 	$(function(){
@@ -42,7 +42,11 @@
 				$("#edu").text(data.edu);
 				$("#phone").text(data.phone);
 				$("#email").text(data.email);
-				$("#dept").text(data.dept.dname+','+data.position.pname);
+				if(data.dept==null){
+					$("#dept").text('无');
+				}else{
+					$("#dept").text(data.dept.dname+','+data.position.pname);
+				}
 				$("#salaryexp").text(data.salaryexp);
 				$("#workyear").text(data.workyear+'年');
 				$("#lastjob").text(data.lastjob);
@@ -71,6 +75,23 @@
 			success:function(data){
 				if(data=='success'){
 					alert('邀请成功');
+				}
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+	}
+	function delInfo(obj){
+		var uId = $(obj).attr("name");
+		$.ajax({
+			url:"${pageContext.request.contextPath}/user/delInfoAjax",
+			type:"post",
+			data:{uId:uId},
+			dataType:"text",
+			success:function(data){
+				if(data=='success'){
+					$(obj).parent().parent().remove();
 				}
 			},
 			error:function(x,msg,obj){
@@ -140,7 +161,7 @@
 									<td>${interview.readed==1?'已查看':'未查看'}</td>
 									<td>${interview.interview==1?'已面试':'未面试'}</td>
 									<td><a href="#" name="${interview.uId}" onclick="findInfo(this)">查看</a></td>
-									<td><a>删除</a></td>
+									<td><a href="#" name="${interview.uId}" onclick="delInfo(this)">删除</a></td>
 								</tr>
 							</c:forEach>
 						</table>

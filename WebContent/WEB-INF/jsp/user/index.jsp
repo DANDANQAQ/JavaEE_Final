@@ -1,13 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=utf8"
     pageEncoding="utf8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="f" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf8">
 <title>用户主页</title>
-<link href="${pageContext.request.contextPath}/css/bootstrap.css" rel="stylesheet">
-<link href="${pageContext.request.contextPath}/css/main.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css/css1/bootstrap.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css/css1/main.css" rel="stylesheet">
 <script type="text/javascript" src="${pageContext.request.contextPath}/JS/jquery-1.7.2.js"></script>
 <script type="text/javascript">
 	function resume(){
@@ -23,6 +24,11 @@
 	function changePSWpage(){
 		$(".allpage").hide();
 		$("#changePSWpage").fadeIn();
+		return false;
+	}
+	function feedback(){
+		$(".allpage").hide();
+		$("#feedback").fadeIn();
 		return false;
 	}
 	function pswValidate(){
@@ -60,6 +66,12 @@
 		$(".allpage").hide();
 		$("#index").show();
 	})
+	function later(){
+		if(${not empty sessionScope.interviewFeedback}){
+			alert("通知：您有一份面试通知，请在 反馈 中查看");
+		}
+	}
+	window.setTimeout("later();",1000);
 	function choiceDept(obj){
 		var $dId = $("select[name=dId]").val();
 		$("option[class=de]").remove();
@@ -121,7 +133,7 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#" onclick="return resume()">查看/修改简历</a></li>
-            <li><a href="#">反馈</a></li>
+            <li><a href="#" onclick="return feedback()">反馈</a></li>
             <li><a href="#" onclick="return changePSWpage()">修改密码</a></li>
             <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
           </ul>
@@ -140,6 +152,42 @@
 						<h1>Hi, ${sessionScope.nowUser.uName}</h1>
 						<p>欢迎登录人力资源管理系统，在这里，你可以投递简历，应聘你喜欢的职位！</p>
 						<p>Please, consider to register to <a href="http://eepurl.com/IcgkX">our newsletter</a> to be updated with our latest themes and freebies. Like always, you can use this theme in any project freely. Share it with your friends.</p>
+					</div>
+					
+					<!-- 反馈 -->
+					<div id="feedback" class="allpage">
+						<c:choose>
+							<c:when test="${empty sessionScope.interviewFeedback}">
+								<table align="center" border="soild 1px" cellpadding="10px" cellspacing="0">
+									<tr>
+										<th colspan="5" style="text-align:center;">当前没有反馈信息</th>
+									</tr>
+								</table>
+							</c:when>
+							<c:otherwise>
+								<table align="center" border="soild 1px" cellpadding="10px" cellspacing="0">
+									<tr>
+										<th colspan="5" style="text-align:center;">反馈信息</th>
+									</tr>
+									<tr>
+										<td>投递时间</td>
+										<td>是否查看</td>
+										<td>面试日期</td>
+										<td>面试时间</td>
+										<td>是否录用</td>
+									</tr>
+									<tr>
+										<td>
+											<f:formatDate value="${sessionScope.interviewFeedback.deliverTime}" pattern="yyyy-MM-dd"/>
+										</td>
+										<td>已查看</td>
+										<td>${sessionScope.interviewFeedback.invitedTime}</td>
+										<td>10:00-15:00</td>
+										<td>未录用</td>
+									</tr>
+								</table>
+							</c:otherwise>
+						</c:choose>
 					</div>
 					
 					<!-- 修改密码 -->

@@ -59,24 +59,51 @@ public class loginController {
 			interview.setDeliverTime(new Date());
 			interviewService.updateInterview(interview);
 		}
-		Info infoByuId = infoService.queryUserInfoByuId(uId);
+		Info infoByuId = infoService.queryInfoByuId(uId);
 		int iId = infoByuId.getiId();
 		int type = infoByuId.getType();
-		int readed = infoByuId.getReaded();
+		int readed = 0;
 		Date entryTime = infoByuId.getEntryTime();
 		String msg = infoByuId.getMsg();
 		boolean updateInfo = infoService.updateInfo(new Info(iId, uId, realName, sex, age, edu, phone, email, department, position, politics, lastJob, workYear, salaryExp, hobby, readed, type, entryTime, msg));
 		if(updateInfo) {
-			int deliver = interviewService.queryInterviewByuId(uId).getDeliver();
-			if(deliver == 1) {
-				Info queryInfoByuId = infoService.queryInfoByuId(uId);
-				session.setAttribute("info", queryInfoByuId);
-			}else {
-				session.setAttribute("info", infoService.queryUserInfoByuId(uId));
-			}
+			Interview interview = interviewService.queryInterviewByuId(uId);
+			interview.setReaded(0);
+			interviewService.updateInterview(interview);
+			Info queryInfoByuId = infoService.queryInfoByuId(uId);
+			session.setAttribute("info", queryInfoByuId);
 			return "user/index";
 		}
 		return null;
+	}
+	@RequestMapping("ifenroll")
+	public String ifenroll(Integer invitedUserId,Integer ifenroll,HttpSession session) {
+		Interview interview = interviewService.queryInterviewByuId(invitedUserId);
+		Info info = infoService.queryInfoByuId(invitedUserId);
+		interview.setInterview(1);
+/*		if(ifenroll == 0) {
+			interview.setEnroll(0);
+			interview.setReaded(0);
+			info.setReaded(0);
+		}*/
+		if(ifenroll == 1) {
+			interview.setEnroll(1);
+			info.setEntryTime(new Date());
+			info.setType(2);
+			User enrollUser = userService.queryUserById(invitedUserId);
+			enrollUser.setType(2);
+			userService.updateUser(enrollUser);
+		}
+		interview.setInvited(0);
+		interview.setInvitedTime(null);
+		interviewService.updateInterview(interview);
+		infoService.updateInfo(info);
+		User user = (User) session.getAttribute("nowUser");
+		int uId = user.getuId();
+		int dId = infoService.queryInfoByuId(uId).getDept().getdId();
+		List<Interview> interviewsByDept = interviewService.queryDeliverInterviewsByDept(dId);
+		session.setAttribute("interviewsByDept", interviewsByDept);
+		return "dept/index";
 	}
 	@RequestMapping(value="invitedAjax",produces = "text/html;charset=UTF-8")
 	@ResponseBody
@@ -87,6 +114,19 @@ public class loginController {
 		Interview interview = interviewService.queryInterviewByuId(uId);
 		interview.setInvited(1);
 		interview.setInvitedTime(invitedTime);
+		interviewService.updateInterview(interview);
+		return "success";
+	}
+	@RequestMapping(value="delInfoAjax",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String delInfoAjax(Integer uId) {
+		if(uId == null) {
+			return null;
+		}
+		Interview interview = interviewService.queryInterviewByuId(uId);
+		interview.setDeliver(0);
+		interview.setDeliverTime(null);
+		interview.setInterview(0);
 		interviewService.updateInterview(interview);
 		return "success";
 	}
@@ -145,7 +185,7 @@ public class loginController {
 				Info info = new Info(0, uId, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 1, null, null);
 				boolean addInfo = infoService.addInfo(info);
 				if(addInfo) {
-					Info infoByuId = infoService.queryUserInfoByuId(uId);
+					Info infoByuId = infoService.queryInfoByuId(uId);
 					int iId = infoByuId.getiId();
 					Interview interview = new Interview(0, uId, iId, 0, null, 0, 0, null, 0, 0);
 					boolean addInterview = interviewService.addInterview(interview);
@@ -175,12 +215,14 @@ public class loginController {
 					session.setAttribute("interviews", interviews);
 					return "jump/adminJump";
 				}else if(type == 1) {
-					int deliver = interviewService.queryInterviewByuId(uId).getDeliver();
-					if(deliver == 1) {
-						session.setAttribute("info", infoService.queryInfoByuId(uId));
+					Interview interview = interviewService.queryInterviewByuId(uId);
+					int invited = interview.getInvited();
+					if(invited==1) {
+						session.setAttribute("interviewFeedback", interview);
 					}else {
-						session.setAttribute("info", infoService.queryUserInfoByuId(uId));
+						session.setAttribute("interviewFeedback", null);
 					}
+					session.setAttribute("info", infoService.queryInfoByuId(uId));
 					return "jump/userJump";
 				}else if(type == 2) {
 					return "jump/employeeJump";
@@ -190,7 +232,7 @@ public class loginController {
 					if(interviewsByDept!=null) {
 						session.setAttribute("interviewsByDept", interviewsByDept);
 					}
-					return "jump/deptJump";
+					return "dept/index";
 				}else {
 					model.addAttribute("loginMsg", "µÇÂ¼Òì³£");
 					return "loginRegister";
@@ -205,10 +247,10 @@ public class loginController {
 	public String toAdmin() {
 		return "admin/index";
 	}
-	@RequestMapping("/todept")
+/*	@RequestMapping("/todept")
 	public String todept() {
 		return "dept/index";
-	}
+	}*/
 	@RequestMapping("/toEmployee")
 	public String toEmployee() {
 		return "employee/index";
