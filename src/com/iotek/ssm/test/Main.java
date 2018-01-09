@@ -18,9 +18,11 @@ import com.iotek.ssm.entity.Department;
 import com.iotek.ssm.entity.Employment;
 import com.iotek.ssm.entity.Info;
 import com.iotek.ssm.entity.Position;
+import com.iotek.ssm.entity.Train;
 import com.iotek.ssm.entity.User;
 import com.iotek.ssm.service.EmploymentService;
 import com.iotek.ssm.service.PositionService;
+import com.iotek.ssm.service.TrainService;
 import com.iotek.ssm.util.MyUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,6 +42,8 @@ public class Main {
 	private EmploymentService employmentService;
 	@Autowired
 	private PositionService positionService;
+	@Autowired
+	private TrainService trainService;
 	@Test
 	public void test() {
 	//	userDao.addUser(new User(0, "dandan", "change941221"));
@@ -98,5 +102,11 @@ public class Main {
 				System.out.println(info);
 			}
 		}
+	}
+	@Test
+	public void test8() {
+		trainService.addTrain(new Train(0, "»À ¬≤ø≈‡—µ", new Date(), new Department(1, null, null, null)));
+		System.out.println(trainService.queryAllTrains());
+		System.out.println(trainService.queryTrainsBydId(1));
 	}
 }

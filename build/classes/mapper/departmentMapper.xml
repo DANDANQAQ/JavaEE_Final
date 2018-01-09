@@ -18,7 +18,7 @@
 		UPDATE
 			departments
 		SET
-			d_name=#{dName},
+			d_name=#{dName}
 		WHERE
 			d_id=#{dId}
 	</update>

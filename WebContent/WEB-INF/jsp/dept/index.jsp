@@ -14,7 +14,6 @@
 	$(function(){
 		$(".allpage").hide();
 		$("#index").show();
-		
 	})
 	function later(){
 		if(${not empty sessionScope.interviewsByDept}){
@@ -78,12 +77,9 @@
 	<div class="navbar navbar-inverse navbar-static-top">
 	  <div class="container">
 	    <div class="navbar-header">
-	      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	      </button>
-	      <a class="navbar-brand" href="#" onclick="return mainpage()">人力资源管理系统</a>
+    	    <ul class="nav navbar-nav navbar-right">
+		    	<li><a class="navbar-brand" href="#" onclick="return mainpage()">人力资源管理系统-部门页面</a></li>
+		    </ul>
 	    </div>
 	    <div class="navbar-collapse collapse">
 	      <ul class="nav navbar-nav navbar-right">

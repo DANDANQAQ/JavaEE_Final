@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iotek.ssm.dao.ClockRecordDao">
+	<insert id="addClockRecord" parameterType="ClockRecord" keyProperty="cId">
+		INSERT INTO
+			clockRecords
+			(u_id,year,month,day,clockin,clockout,late,early,absenteeism)
+		VALUES
+			(#{uId},#{year},#{month},#{day},#{clockin},
+			#{clockout},#{late},#{early},#{absenteeism})
+	</insert>
+	
+	<update id="updateClockRecord" parameterType="ClockRecord">
+		UPDATE
+			clockRecords
+		SET
+			u_id=#{uId},
+			year=#{year},
+			month=#{month},
+			day=#{day},
+			clockin=#{clockin},
+			clockout=#{clockout},
+			late=#{late},
+			early=#{early},
+			absenteeism=#{absenteeism}
+		WHERE
+			c_id=#{cId}
+	</update>
+	
+	<select id="queryClockRecordsByuIdYearMonth" resultType="ClockRecord">
+		SELECT 
+			*
+		FROM 
+			clockRecords
+		WHERE
+			u_id=#{uId} AND year=#{year} AND month=#{month}
+	</select>	
+	
+	<select id="queryClockRecordByuIdYearMonthDay" resultType="ClockRecord">
+		SELECT 
+			*
+		FROM 
+			clockRecords
+		WHERE
+			u_id=#{uId} AND year=#{year} AND month=#{month} AND day=#{day}
+	</select>	
+	
+	<select id="getAbsenteeismDays" resultType="ClockRecord">
+		SELECT 
+			*
+		FROM 
+			clockRecords
+		WHERE
+			u_id=#{uId} AND year=#{year} AND month=#{month} AND absenteeism=1
+	</select>	
+	
+</mapper>

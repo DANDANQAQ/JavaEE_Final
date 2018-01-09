@@ -12,30 +12,30 @@
 <style type="text/css">
 	/* Border styles */
 	#table-2 thead, #table-2 tr {
-	border-top-width: 5px;
-	border-top-style: solid;
-	border-top-color: rgb(230, 189, 189);
+		border-top-width: 5px;
+		border-top-style: solid;
+		border-top-color: rgb(230, 189, 189);
 	}
 	#table-2 {
-	border-bottom-width: 5px;
-	border-bottom-style: solid;
-	border-bottom-color: rgb(230, 189, 189);
+		border-bottom-width: 5px;
+		border-bottom-style: solid;
+		border-bottom-color: rgb(230, 189, 189);
 	}
 	
 	/* Padding and font style */
 	#table-2 td, #table-2 th {
-	padding: 5px 10px;
-	font-size: 30px;
-	font-family: Verdana;
-	color: rgb(177, 106, 104);
+		padding: 5px 10px;
+		font-size: 15px;
+		font-family: Verdana;
+		color: rgb(177, 106, 104);
 	}
 	
 	/* Alternating background colors */
 	#table-2 tr:nth-child(even) {
-	background: rgb(238, 211, 210)
+		background: rgb(238, 211, 210)
 	}
 	#table-2 tr:nth-child(odd) {
-	background: #FFF
+		background: #FFF
 	}
 </style>
 <script type="text/javascript" src="${pageContext.request.contextPath}/JS/jquery-1.7.2.js"></script>
@@ -47,6 +47,9 @@
 		}else if(${not empty requestScope.toDeptPage}){
 			$(".allpage").hide();
 			$("#DP").show();
+		}else if(${not empty requestScope.toRecruitment}){
+			$(".allpage").hide();
+			$("#recruitment").show();
 		}else{
 			$(".allpage").hide();
 			$("#index").show();
@@ -57,14 +60,52 @@
 		$("#index").fadeIn();
 		return false;
 	}
+	function Train(){
+		$(".allpage").hide();
+		$("#train").fadeIn();
+		return false;
+	}
 	function resumeManage(){
 		$(".allpage").hide();
 		$("#resumeManage").fadeIn();
 		return false;
 	}
+	function recruitment(){
+		$(".allpage").hide();
+		$("#recruitment").fadeIn();
+		return false;
+	}
 	function DP(){
 		$(".allpage").hide();
 		$("#DP").fadeIn();
+		return false;
+	}
+	function addTrainTable(){
+		$("#addTrainTable").fadeIn();
+		return false;
+	}
+	function returnTrainsByAdd(){
+		$("#addTrainTable").fadeOut();
+		var tName = $("input[name=tName]").val('');
+		var tTime = $("input[name=tTime]").val('');
+		var traindId = $("select[name=traindId]").val('');
+		return false;
+	}
+	function returnTrainsByEdit(){
+		$("#editTrainTable").fadeOut();
+		$(".a-del").fadeIn();
+		return false;
+	}
+	function editDeptName(obj){
+		var dId = $(obj).attr("name");
+		$("input[name=editDeptdId]").val(dId);
+		$("#editDeptName").fadeIn();
+		return false;
+	}
+	function editPositionName(obj){
+		var pId = $(obj).attr("name");
+		$("input[name=editPositionpId]").val(pId);
+		$("#editPositionName").fadeIn();
 		return false;
 	}
 	function findInfoInPosition(obj){
@@ -140,9 +181,118 @@
 	function invitedTime(){
 		$("#invitedTime").fadeIn();
 	}
+	function addTrain(){
+		var tName = $("input[name=tName]").val();
+		var tTime = $("input[name=tTime]").val();
+		if(tName=="" || tTime==""){
+			alert('内容日期不能为空');
+			return;
+		}
+		var traindId = $("select[name=traindId]").val();
+		$.ajax({
+			url:"${pageContext.request.contextPath}/admin/addTrain",
+			type:"post",
+			data:{tName:tName,tTime:tTime,traindId:traindId},
+			dataType:"text",
+			success:function(data){
+				if(data=='addTrain'){
+					alert('发布成功');
+				}
+				$("#addTrainTable").fadeOut();
+				$("#ul-trains").append(
+					"<li><a href='#' name="+data+
+						" onclick='return editTrainTable(this)'>"+$("input[name=tName]").val()+
+						"</a><a href='#' name="+data+
+						" onclick='return delTrain(this)'>[D]</a></li>"
+				)
+				var tName = $("input[name=tName]").val('');
+				var tTime = $("input[name=tTime]").val('');
+				var traindId = $("select[name=traindId]").val('');
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+	}
+	function editTrain(){
+		var tId = $("input[name=edit_tId]").val();
+		var tName = $("input[name=edit_tName]").val();
+		var tTime = $("input[name=edit_tTime]").val();
+		if(tName=="" || tTime==""){
+			alert('内容日期不能为空');
+			return;
+		}
+		var traindId = $("select[name=edit_traindId]").val();
+		$.ajax({
+			url:"${pageContext.request.contextPath}/admin/editTrainAjax",
+			type:"post",
+			data:{tId:tId,tName:tName,tTime:tTime,traindId:traindId},
+			dataType:"text",
+			success:function(data){
+				if(data=='editTrain'){
+					$("#editTrainTable").hide();
+					$("#ul-trains").find("a[class='"+$("input[name=edit_tId]").val()+"']").text($("input[name=edit_tName]").val());      
+				}
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+	}
+	function editTrainTable(obj){
+		var tId = $(obj).attr("name");
+		$.ajax({
+			url:"${pageContext.request.contextPath}/admin/findTrainAjax",
+			type:"post",
+			data:{tId:tId},
+			dataType:"JSON",
+			success:function(data){
+				$("input[name=edit_tId]").val(data.tid);
+				$("input[name=edit_tName]").val(data.tname);
+				
+				var now = new Date(data.ttime);
+				//格式化日，如果小于9，前面补0  
+				var day = ("0" + now.getDate()).slice(-2);  
+				//格式化月，如果小于9，前面补0  
+				var month = ("0" + (now.getMonth() + 1)).slice(-2);  
+				//拼装完整日期格式  
+				var today = now.getFullYear()+"-"+(month)+"-"+(day) ;  
+				//完成赋值  
+				$('input[name=edit_tTime]').val(today);  
+				
+				$("#edit_traindId").find("option[value='"+data.department.did+"']").attr("selected",true);      
+				$("#editTrainTable").fadeIn();
+				$(".a-del").fadeOut();
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+	}
+	function delTrain(obj){
+		var tId = $(obj).attr("name");
+		$.ajax({
+			url:"${pageContext.request.contextPath}/admin/delTrainAjax",
+			type:"post",
+			data:{tId:tId},
+			dataType:"text",
+			success:function(data){
+				if(data=='success'){
+					$(obj).parent().remove();
+				}
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+	}
 	function invited(){
 		var uId = $("input[name=invitedUserId]").val();
 		var invitedTime = $("input[name=invitedTime]").val();
+		if(uId=="" || invitedTime==""){
+			alert('日期不能为空');
+			return;
+		}
 		$.ajax({
 			url:"${pageContext.request.contextPath}/user/invitedAjax",
 			type:"post",
@@ -152,6 +302,27 @@
 				if(data=='success'){
 					alert('邀请成功');
 				}
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+	}
+	function choiceDept(obj){
+		var $dId = $("select[name=dId]").val();
+		$("option[class=de]").remove();
+		$.ajax({
+			url:"${pageContext.request.contextPath}/user/choiceDept",
+			type:"get",
+			data:{deptId:$dId},
+			dataType:"JSON",
+			success:function(data){
+				$("select[name=pId]").empty();
+				$.each(data,function(idx,item){
+					$("select[name=pId]").append(
+						"<option value="+item.pid+">"+item.pname+"</option>"
+					)
+				})
 			},
 			error:function(x,msg,obj){
 				alert(msg);
@@ -181,18 +352,16 @@
     <div class="navbar navbar-inverse navbar-static-top">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#" onclick="return mainpage()">人力资源管理系统</a>
-        </div>
+    	    <ul class="nav navbar-nav navbar-right">
+		    	<li><a class="navbar-brand" href="#" onclick="return mainpage()">人力资源管理系统-管理员页面</a></li>
+		    </ul>
+	    </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#" onclick="return resumeManage()">应聘管理</a></li>
+            <li><a href="#" onclick="return recruitment()">招聘信息</a></li>
             <li><a href="#" onclick="return DP()">部门职位</a></li>
-            <li><a href="#" onclick="return changePSWpage()">培训管理</a></li>
+            <li><a href="#" onclick="return Train()">培训管理</a></li>
             <li><a href="#">员工管理</a></li>
             <li><a href="#">奖惩管理</a></li>
             <li><a href="#">薪资管理</a></li>
@@ -215,14 +384,170 @@
 						<p>管理员你好！</p>
 						<p>Please, consider to register to <a href="http://eepurl.com/IcgkX">our newsletter</a> to be updated with our latest themes and freebies. Like always, you can use this theme in any project freely. Share it with your friends.</p>
 					</div>
+					
+					<!-- 培训管理 -->
+					<div id="train" class="allpage">
+						<table id="table-2">
+							<tr>
+								<td>
+									<ul id="ul-trains">
+										<c:forEach items="${sessionScope.trains}" var="t">
+											<li>
+												<a href="#" name="${t.tId}" class="${t.tId}" onclick="return editTrainTable(this)">${t.tName}</a>
+												<a href="#" name="${t.tId}" class="a-del" onclick="return delTrain(this)">[D]</a>
+											</li>
+										</c:forEach>
+									</ul>
+									<input type="submit" id="td-invited" class="btn btn-success" value="+" onclick="addTrainTable()">
+								</td>
+								<td id="editTrainTable" class="allpage">
+									<table>
+										<tr>
+											<th>培训--修改</th>
+										</tr>
+										<tr>
+											<td>
+												培训名称：
+												<input type="hidden" name="edit_tId">
+												<input type="text" name="edit_tName" placeholder="培训内容" required="required">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												培训时间：<input type="date" name="edit_tTime" required="required">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												培训部门：
+												<select name="edit_traindId" id="edit_traindId">
+													<c:forEach items="${sessionScope.depts}" var="d">
+														<option value="${d.dId}">${d.dName}</option>
+													</c:forEach>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<input type="submit" id="td-invited" class="btn btn-success" value="修改" onclick="editTrain()">
+												<input type="submit" class="btn btn-success" value="取消" onclick="returnTrainsByEdit()">
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td id="addTrainTable" class="allpage">
+									<table>
+										<tr>
+											<th>培训--新增</th>
+										</tr>
+										<tr>
+											<td>
+												培训名称：<input type="text" name="tName" placeholder="培训内容" required="required">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												培训时间：<input type="date" name="tTime" required="required">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												培训部门：
+												<select name="traindId">
+													<c:forEach items="${sessionScope.depts}" var="d">
+														<option value="${d.dId}">${d.dName}</option>
+													</c:forEach>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<input type="submit" id="td-invited" class="btn btn-success" value="发布培训" onclick="addTrain()">
+												<input type="submit" class="btn btn-success" value="取消" onclick="returnTrainsByAdd()">
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</div>
+					
+					<!-- 招聘 -->
+					<div id="recruitment" class="allpage">
+						<table id="table-2" width="800">
+							<tr>
+								<th colspan="5" style="text-align:center;">招聘信息</th>
+							</tr>
+							<tr>
+								<th style="text-align:center;">部门</th>
+								<th style="text-align:center;">职位</th>
+								<th style="text-align:center;">详情</th>
+								<th style="text-align:center;">发布时间</th>
+								<th style="text-align:center;">删除</th>
+							</tr>
+							<c:forEach items="${sessionScope.employments}" var="e">
+								<tr>
+									<td style="text-align:center;">${e.department.dName}</td>
+									<td style="text-align:center;">${e.position.pName}</td>
+									<td style="text-align:center;">${e.requirement}</td>
+									<td style="text-align:center;">
+										<f:formatDate value="${e.deliverTime}" pattern="yyyy-MM-dd HH:mm"/>
+									</td>
+									<td style="text-align:center;"><a href="${pageContext.request.contextPath}/admin/delRecruitment?eId=${e.eId}">DEL</a></td>
+								</tr>
+							</c:forEach>
+						</table>
+						<form action="${pageContext.request.contextPath}/admin/addEmployment" method="post">
+							<table id="table-2" width="800">
+								<tr>
+									<th style="text-align:center;">
+										添加招聘信息
+										<select name="dId" onchange="choiceDept()">
+											<option value="0" class="de">--部门--</option>
+											<c:forEach items="${sessionScope.depts}" var="d">
+												<option value="${d.dId}">${d.dName}</option>
+											</c:forEach>
+										</select>
+										<select name="pId">
+											<option value="0">--职位--</option>
+										</select>
+									</th>
+								</tr>
+								<tr>
+									<th style="text-align:center;">
+										详情:<input type="text" name="requirement">
+									</th>
+								</tr>
+								<tr>
+									<td>
+										<input type="submit" value="发布">
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+					
 					<!-- 部门职位 -->
 					<div id="DP" class="allpage">
+						<form id="editDeptName" class="allpage" action="${pageContext.request.contextPath}/admin/editDeptName">
+							<h4>修改部门名</h4>
+							<input type="hidden" name="editDeptdId">
+							<input type="text" name="deptName" placeholder="请输入部门名" required="required">
+							<input type="submit" class="btn btn-success" value="提交">
+						</form>
+						<form id="editPositionName" class="allpage" action="${pageContext.request.contextPath}/admin/editPositionName">
+							<h4>修改部门名</h4>
+							<input type="hidden" name="editPositionpId">
+							<input type="text" name="positionName" placeholder="请输入职位名" required="required">
+							<input type="submit" class="btn btn-success" value="提交">
+						</form>
 						<table id="table-2" align="center">
 							<tr>
 								<c:forEach items="${sessionScope.depts}" var="d">
 									<th><ul><li>
 										${d.dName}
-										<a href="${pageContext.request.contextPath}/admin/delDept?dId=${d.dId}">[DEL]</a>
+										<a href="#" name="${d.dId}" onclick="return editDeptName(this)">[E]</a>
+										<a href="${pageContext.request.contextPath}/admin/delDept?dId=${d.dId}">[D]</a>
 									</li></ul></th>
 								</c:forEach>
 							</tr>
@@ -233,7 +558,8 @@
 											<c:forEach items="${d.positions}" var="p">
 												<li>
 													<a href="${pageContext.request.contextPath}/admin/positionMsg?pId=${p.pId}">${p.pName}</a>
-													<a href="${pageContext.request.contextPath}/admin/delPosition?pId=${p.pId}">[DEL]</a>
+													<a href="#" name="${p.pId}" onclick="return editPositionName(this)">[E]</a>
+													<a href="${pageContext.request.contextPath}/admin/delPosition?pId=${p.pId}">[D]</a>
 												</li>
 											</c:forEach>
 										</ul>

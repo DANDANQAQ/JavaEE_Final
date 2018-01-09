@@ -1,5 +1,6 @@
 package com.iotek.ssm.controller;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -12,16 +13,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.iotek.ssm.entity.ClockRecord;
 import com.iotek.ssm.entity.Department;
 import com.iotek.ssm.entity.Employment;
 import com.iotek.ssm.entity.Info;
 import com.iotek.ssm.entity.Interview;
 import com.iotek.ssm.entity.Position;
+import com.iotek.ssm.entity.Train;
 import com.iotek.ssm.entity.User;
+import com.iotek.ssm.service.ClockRecordService;
 import com.iotek.ssm.service.DepartmentService;
 import com.iotek.ssm.service.EmploymentService;
 import com.iotek.ssm.service.InfoService;
 import com.iotek.ssm.service.InterviewService;
+import com.iotek.ssm.service.TrainService;
 import com.iotek.ssm.service.UserService;
 import com.iotek.ssm.util.MyUtil;
 
@@ -38,6 +43,10 @@ public class loginController {
 	private InterviewService interviewService;
 	@Autowired
 	private EmploymentService employementService;
+	@Autowired
+	private TrainService trainService;
+	@Autowired
+	private ClockRecordService clockRecordService;
 	@RequestMapping("saveInterview")
 	public String saveInterview(Model model, Info info, int dId, int pId, HttpSession session) {
 		String realName = info.getRealName();
@@ -85,11 +94,6 @@ public class loginController {
 		Interview interview = interviewService.queryInterviewByuId(invitedUserId);
 		Info info = infoService.queryInfoByuId(invitedUserId);
 		interview.setInterview(1);
-/*		if(ifenroll == 0) {
-			interview.setEnroll(0);
-			interview.setReaded(0);
-			info.setReaded(0);
-		}*/
 		if(ifenroll == 1) {
 			interview.setEnroll(1);
 			info.setEntryTime(new Date());
@@ -211,9 +215,13 @@ public class loginController {
 		}else {
 			if(user.getPassword().equals(MyUtil.md5(u.getPassword()))) {
 				int type = user.getType();
-				session.setAttribute("nowUser", user);
+				session.setAttribute("nowUser", user);//user
 				int uId = user.getuId();
-				session.setAttribute("depts", departmentService.queryAllDepts());
+				session.setAttribute("depts", departmentService.queryAllDepts());//depts
+				List<Employment> employments = employementService.queryAllEmployments();
+				session.setAttribute("employments", employments);//employments
+				List<Train> trains = trainService.queryAllTrains();
+				session.setAttribute("trains", trains);
 				if(type == 0) {
 					List<Interview> interviews = interviewService.queryDeliverInterviews();
 					session.setAttribute("interviews", interviews);
@@ -222,21 +230,33 @@ public class loginController {
 					Interview interview = interviewService.queryInterviewByuId(uId);
 					int invited = interview.getInvited();
 					if(invited==1) {
-						session.setAttribute("interviewFeedback", interview);
+						session.setAttribute("interviewFeedback", interview);//interviewFeedback
 					}else {
 						session.setAttribute("interviewFeedback", null);
 					}
-					session.setAttribute("info", infoService.queryInfoByuId(uId));
-					List<Employment> employments = employementService.queryAllEmployments();
-					session.setAttribute("employments", employments);
+					session.setAttribute("info", infoService.queryInfoByuId(uId));//info
 					return "jump/userJump";
 				}else if(type == 2) {
+					boolean canClockin = clockRecordService.canClockin(uId);
+					boolean canClockout = clockRecordService.canClockout(uId);
+					session.setAttribute("canClockin", canClockin);
+					session.setAttribute("canClockout", canClockout);
+					Calendar now = Calendar.getInstance();
+					int year = now.get(Calendar.YEAR);
+					int month = now.get(Calendar.MONTH);
+					month++;
+					List<ClockRecord> clockRecords = clockRecordService.getClockRecordsForMonth(uId, year, month);
+					int absenteeismDays = clockRecordService.getAbsenteeismDays(uId, year, month);
+					session.setAttribute("absenteeismDays", absenteeismDays);
+					session.setAttribute("clockRecords", clockRecords);
+					session.setAttribute("year", year);
+					session.setAttribute("month", month);
 					return "jump/employeeJump";
 				}else if(type == 3) {
 					int dId = infoService.queryInfoByuId(uId).getDept().getdId();
 					List<Interview> interviewsByDept = interviewService.queryDeliverInterviewsByDept(dId);
 					if(interviewsByDept!=null) {
-						session.setAttribute("interviewsByDept", interviewsByDept);
+						session.setAttribute("interviewsByDept", interviewsByDept);//interviewsByDept
 					}
 					return "dept/index";
 				}else {
@@ -253,10 +273,10 @@ public class loginController {
 	public String toAdmin() {
 		return "admin/index";
 	}
-/*	@RequestMapping("/todept")
+	@RequestMapping("/todept")
 	public String todept() {
 		return "dept/index";
-	}*/
+	}
 	@RequestMapping("/toEmployee")
 	public String toEmployee() {
 		return "employee/index";

@@ -12,30 +12,30 @@
 <style type="text/css">
 	/* Border styles */
 	#table-3 thead, #table-3 tr {
-	border-top-width: 1px;
-	border-top-style: solid;
-	border-top-color: rgb(235, 242, 224);
+		border-top-width: 1px;
+		border-top-style: solid;
+		border-top-color: rgb(235, 242, 224);
 	}
 	#table-3 {
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: rgb(235, 242, 224);
+		border-bottom-width: 1px;
+		border-bottom-style: solid;
+		border-bottom-color: rgb(235, 242, 224);
 	}
 	
 	/* Padding and font style */
 	#table-3 td, #table-3 th {
-	padding: 5px 10px;
-	font-size: 20px;
-	font-family: Verdana;
-	color: rgb(149, 170, 109);
+		padding: 5px 10px;
+		font-size: 20px;
+		font-family: Verdana;
+		color: rgb(149, 170, 109);
 	}
 	
 	/* Alternating background colors */
 	#table-3 tr:nth-child(even) {
-	background: rgb(230, 238, 214)
+		background: rgb(230, 238, 214)
 	}
 	#table-3 tr:nth-child(odd) {
-	background: #FFF
+		background: #FFF
 	}
 </style>
 <script type="text/javascript" src="${pageContext.request.contextPath}/JS/jquery-1.7.2.js"></script>
@@ -157,13 +157,10 @@
     <div class="navbar navbar-inverse navbar-static-top">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#" onclick="return mainpage()">人力资源管理系统</a>
-        </div>
+    	    <ul class="nav navbar-nav navbar-right">
+		    	<li><a class="navbar-brand" href="#" onclick="return mainpage()">人力资源管理系统-游客页面</a></li>
+		    </ul>
+	    </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#" onclick="return recruitment()">查看招聘信息</a></li>
@@ -204,7 +201,7 @@
 									<td style="text-align:center;">${e.position.pName}</td>
 									<td style="text-align:center;">${e.requirement}</td>
 									<td style="text-align:center;">
-										<f:formatDate value="${e.deliverTime}" pattern="yyyy-MM-dd hh:mm"/>
+										<f:formatDate value="${e.deliverTime}" pattern="yyyy-MM-dd HH:mm"/>
 									</td>
 								</tr>
 							</c:forEach>
