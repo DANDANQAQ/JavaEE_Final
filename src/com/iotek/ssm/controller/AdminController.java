@@ -22,16 +22,24 @@ import com.iotek.ssm.entity.Info;
 import com.iotek.ssm.entity.Interview;
 import com.iotek.ssm.entity.Position;
 import com.iotek.ssm.entity.Train;
+import com.iotek.ssm.entity.User;
+import com.iotek.ssm.entity.Wages;
 import com.iotek.ssm.service.DepartmentService;
 import com.iotek.ssm.service.EmploymentService;
 import com.iotek.ssm.service.InfoService;
 import com.iotek.ssm.service.InterviewService;
 import com.iotek.ssm.service.PositionService;
 import com.iotek.ssm.service.TrainService;
+import com.iotek.ssm.service.UserService;
+import com.iotek.ssm.service.WagesService;
+import com.iotek.ssm.util.ChineseToEnglish2;
+import com.iotek.ssm.util.MyUtil;
 
 @RequestMapping("/admin")
 @Controller
 public class AdminController {
+	@Autowired
+	private UserService userService;
 	@Autowired
 	private TrainService trainService;
 	@Autowired
@@ -44,10 +52,21 @@ public class AdminController {
 	private EmploymentService employementService;
 	@Autowired
 	private PositionService positionService;
+	@Autowired
+	private WagesService wagesService;
 	@InitBinder
 	public void InitBinder(ServletRequestDataBinder binder) {
 		binder.registerCustomEditor(Date.class, 
 				new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
+	}
+	@RequestMapping("findWages")
+	public String findWages(HttpSession session,Model model,Integer year,Integer month) {
+		model.addAttribute("toWages", "toWages");
+		List<Wages> wages = wagesService.findWagesByYearMonth(year, month);
+		session.setAttribute("wages", wages);
+		session.setAttribute("year", year);
+		session.setAttribute("month", month);
+		return "admin/index";
 	}
 	//ÅàÑµ ÔöÉ¾¸Ä
 	@RequestMapping("addTrain")
@@ -112,11 +131,26 @@ public class AdminController {
 	@RequestMapping("editDeptName")
 	public String editDeptName(Model model,Integer editDeptdId,String deptName,HttpSession session) {
 		model.addAttribute("toDeptPage", "toDeptPage");
-		Department department = departmentService.queryDeptById(editDeptdId);
-		department.setdName(deptName);
-		departmentService.updateDepartment(department);
-		List<Department> depts = departmentService.queryAllDepts();
-		session.setAttribute("depts", depts);//depts
+		Department departmentNew = departmentService.queryDeptByName(deptName);
+		if(departmentNew == null) {
+			Department department = departmentService.queryDeptById(editDeptdId);
+			//ÐÞ¸ÄÕËºÅ
+			String deptNameOld = department.getdName();
+			String fullSpellOld = ChineseToEnglish2.getFullSpell(deptNameOld);
+			String deptSpellOld = fullSpellOld+"admin";
+			User queryUserByNameOld = userService.queryUserByName(deptSpellOld);
+			
+			String fullSpellNew = ChineseToEnglish2.getFullSpell(deptName);
+			String deptSpellNew = fullSpellNew+"admin";
+			
+			queryUserByNameOld.setuName(deptSpellNew);
+			queryUserByNameOld.setPassword(MyUtil.md5(deptSpellNew));
+			
+			department.setdName(deptName);
+			departmentService.updateDepartment(department);
+			List<Department> depts = departmentService.queryAllDepts();
+			session.setAttribute("depts", depts);//depts
+		}
 		return "admin/index";
 	}
 	@RequestMapping("delDept")
@@ -126,9 +160,21 @@ public class AdminController {
 		if(department.getPositions().size()>0) {
 			return "admin/index";
 		}
+		//×¢ÏúÕËºÅ
+		String deptNameOld = department.getdName();
+		String fullSpellOld = ChineseToEnglish2.getFullSpell(deptNameOld);
+		String deptSpellOld = fullSpellOld+"admin";
+		User queryUserByNameOld = userService.queryUserByName(deptSpellOld);
+		if(queryUserByNameOld != null) {
+			userService.delUserById(queryUserByNameOld.getuId());
+			Info info = infoService.queryInfoByuId(queryUserByNameOld.getuId());
+			infoService.delInfoById(info.getiId());
+		}
+		
 		departmentService.delDepartmentById(dId);
 		List<Department> depts = departmentService.queryAllDepts();
 		session.setAttribute("depts", depts);//depts
+		
 		return "admin/index";
 	}
 	@RequestMapping("addDept")
@@ -139,6 +185,16 @@ public class AdminController {
 			departmentService.addDepartment(new Department(0, deptName, new Date(), null));
 			List<Department> depts = departmentService.queryAllDepts();
 			session.setAttribute("depts", depts);//depts
+			//Îª²¿ÃÅ×¢²áÕËºÅ
+			String fullSpell = ChineseToEnglish2.getFullSpell(deptName);
+			String deptSpell = fullSpell+"admin";
+			User queryUserByName = userService.queryUserByName(deptSpell);
+			if(queryUserByName == null) {
+				boolean addUser = userService.addUser(new User(0, deptSpell, MyUtil.md5(deptSpell), 3));
+				int uId = userService.queryUserByName(deptSpell).getuId();
+				Info info = new Info(0, uId, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 3, null, null);
+				infoService.addInfo(info);
+			}
 		}
 		return "admin/index";
 	}

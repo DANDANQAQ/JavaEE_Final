@@ -10,4 +10,5 @@ public interface EmploymentDao {
 	public int updateEmployment(Employment employment);
 	
 	public List<Employment> queryAllEmployments();
+	public List<Employment> queryEmploymentsByDept(int dId);
 }

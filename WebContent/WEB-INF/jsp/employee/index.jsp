@@ -41,6 +41,8 @@
 	$(function(){
 		$("#year").find("option[value='"+${sessionScope.year}+"']").attr("selected",true);
 		$("#month").find("option[value='"+${sessionScope.month}+"']").attr("selected",true);
+		$("#yearw").find("option[value='"+${sessionScope.yearw}+"']").attr("selected",true);
+		$("#monthw").find("option[value='"+${sessionScope.monthw}+"']").attr("selected",true);
 		if(${sessionScope.canClockin==false}){
 			$("button[name=clockin]").attr("disabled",true);
 		}else{
@@ -55,6 +57,9 @@
 		if(${not empty requestScope.toClockRecords}){
 			$(".allpage").hide();
 			$("#clockRecord").show();
+		}else if(${not empty requestScope.toWages}){
+			$(".allpage").hide();
+			$("#wages").show();
 		}else{
 			$(".allpage").hide();
 			$("#index").show();
@@ -63,6 +68,26 @@
 	function mainpage(){
 		$(".allpage").hide();
 		$("#index").fadeIn();
+		return false;
+	}
+	function personalInformation(){
+		$(".allpage").hide();
+		$("#personalInformation").fadeIn();
+		return false;
+	}
+	function changePSWpage(){
+		$(".allpage").hide();
+		$("#changePSWpage").fadeIn();
+		return false;
+	}
+	function wages(){
+		$(".allpage").hide();
+		$("#wages").fadeIn();
+		return false;
+	}
+	function DP(){
+		$(".allpage").hide();
+		$("#DP").fadeIn();
 		return false;
 	}
 	function clock(){
@@ -74,6 +99,37 @@
 		$(".allpage").hide();
 		$("#clockRecord").show();
 		return false;
+	}
+	function pswValidate(){
+		var newpsw = $("input[name=newpsw]").val();
+		var newpsw2 = $("input[name=newpsw2]").val();
+		if(newpsw==newpsw2){
+			$(".twicePSWmsg").text("通过");
+			$("button[name=changePSWbutton]").attr("disabled",false);
+		}else{
+			$(".twicePSWmsg").text("两次输入不一致");
+			$("button[name=changePSWbutton]").attr("disabled",true);
+		}
+	}
+	function changepsw(){
+		var oldpsw = $("input[name=oldpsw]").val();
+		var newpsw = $("input[name=newpsw]").val();
+		var newpsw2 = $("input[name=newpsw2]").val();
+		if(oldpsw==""||newpsw==""||newpsw2==""){
+			return;
+		}
+		$.ajax({
+			url:"${pageContext.request.contextPath}/user/changePSW",
+			type:"post",
+			data:{oldpsw:oldpsw,newpsw:newpsw},
+			dataType:"text",
+			success:function(data){
+				$(".changePSWmsg").text(data);
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
 	}
 	function clockin(){
 		var clockin = $("button[name=clockin]");
@@ -173,6 +229,20 @@
 		}
 		return str;
 	}
+	function validate(){
+		var reg = new RegExp("^[0-9]*$");
+		var age = $("input[name=age]").val();
+		if(age<0){
+			alert("年龄不合法，请重新输入");
+			return false;
+		}
+		var phone = $("input[name=phone]").val();
+		if(phone.length != 11){
+			alert("手机号不正确，请重新输入");
+			return false;
+		}
+		return true;
+	}
 </script>
 </head>
 <body>
@@ -185,13 +255,13 @@
 	    </div>
 	    <div class="navbar-collapse collapse">
 	      <ul class="nav navbar-nav navbar-right">
-	        <li><a href="#" >个人信息</a></li>
+	        <li><a href="#" onclick="return personalInformation()">个人信息</a></li>
 	        <li><a href="#" onclick="return clock()">考勤</a></li>
 	        <li><a href="#" onclick="return clockRecord()">考勤记录</a></li>
-	        <li><a href="#">修改密码</a></li>
+	        <li><a href="#" onclick="return changePSWpage()">修改密码</a></li>
 	        <li><a href="#">我的奖惩</a></li>
-	        <li><a href="#">部门职位</a></li>
-	        <li><a href="#">我的薪资</a></li>
+	        <li><a href="#" onclick="return DP()">部门职位</a></li>
+	        <li><a href="#" onclick="return wages()">我的薪资</a></li>
 	        <li><a href="#">其他</a></li>
 	        <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
 	      </ul>
@@ -216,6 +286,106 @@
 					<div id="clock" class="allpage">
 						<button type="submit" class="btn btn-success" style="width:300px;height:100px;margin: 0 0 20px 0" name="clockin" onclick="clockin()">打卡上班</button><br/>
 						<button type="submit" class="btn btn-success" style="width:300px;height:100px;margin: 0 0 20px 0" name="clockout" onclick="clockout()">打卡下班</button>
+					</div>
+					
+					<!-- 个人信息 -->
+					<div id="personalInformation" class="allpage">
+						<form action="${pageContext.request.contextPath}/employee/personalInformation" method="post" onsubmit="return validate()">
+							<table align="center" id="table-5">
+								<tr>
+									<th colspan="4" style="text-align:center;">个人信息</th>
+								</tr>
+								<tr>
+									<td>真实姓名</td>
+									<td><input type="text" name="realName" placeholder="请输入真实姓名" required="required" value="${sessionScope.info.realName}"></td>
+									<td>性别</td>
+									<td>${sessionScope.info.sex}</td>
+								</tr>
+								<tr>
+									<td>年龄</td>
+									<td><input type="number" name="age" placeholder="请输入年龄" required="required" value="${sessionScope.info.age}"></td>
+									<td>学历</td>
+									<td>${sessionScope.info.edu}</td>
+								</tr>
+								<tr>
+									<td>手机号</td>
+									<td><input type="number" name="phone" placeholder="请输入联系方式" required="required" value="${sessionScope.info.phone}"></td>
+									<td>e-mail</td>
+									<td><input type="email" name="email" placeholder="请输入邮箱" required="required" value="${sessionScope.info.email}"></td>
+								</tr>
+								<tr>
+									<td>职位</td>
+									<td>${sessionScope.info.dept.dName}&nbsp;&nbsp;${sessionScope.info.position.pName}</td>
+									<td>政治面貌</td>
+									<td>${sessionScope.info.politics}</td>
+								</tr>
+								<tr>
+									<td>入职时间</td>
+									<td>
+										<f:formatDate value="${sessionScope.info.entryTime}" pattern="yyyy-MM-dd"/>	
+									</td>
+									<td>兴趣爱好</td>
+									<td><input type="text" name="hobby" placeholder="请输入兴趣爱好" value="${sessionScope.info.hobby}"></td>
+								</tr>
+								<tr>
+									<td colspan="2"><input type="submit" class="btn btn-success" value="SUBMIT"></td>
+									<td colspan="2"><button type="submit" class="btn btn-success">RETURN</button></td>
+								</tr>
+							</table>
+						</form>
+					</div>
+					
+					<!-- 我的薪资 -->
+					<div id="wages" class="allpage">
+						<form action="${pageContext.request.contextPath}/employee/findWages" method="post">
+							<select name="year" id="yearw">
+								<option value="2018">2018</option>
+							</select>年
+							<select name="month" id="monthw">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+							</select>月
+							<input type="submit" id="td-invited" class="btn btn-success" value="查询">
+						</form>
+						<table id="table-5" align="center">
+							<tr>
+								<th>总工资</th>
+								<th>基本工资</th>
+								<th>绩效工资</th>
+								<th>加班工资</th>
+								<th>奖励工资</th>
+								<th>惩罚工资</th>
+								<th>社保</th>
+								<th>是否异议</th>
+							</tr>
+							<c:if test="${empty sessionScope.wages}">
+								<tr>
+									<td colspan="8">暂无工资记录</td>
+								</tr>
+							</c:if>
+							<c:if test="${not empty sessionScope.wages}">
+								<tr>
+									<td>${sessionScope.wages.realwages}</td>
+									<td>${sessionScope.wages.basicwages}</td>
+									<td>${sessionScope.wages.performance}</td>
+									<td>${sessionScope.wages.overtimewages}</td>
+									<td>${sessionScope.wages.bonus}</td>
+									<td>${sessionScope.wages.forfiet}</td>
+									<td>${sessionScope.wages.social}</td>
+									<td><a href="#">异议</a></td>
+								</tr>
+							</c:if>
+						</table>
 					</div>
 					
 					<!-- 考勤记录 -->
@@ -281,6 +451,60 @@
 							</c:choose>
 						</table>
 					</div>
+							<!-- 修改密码 -->
+					<div id="changePSWpage" class="allpage">
+						<form action="#" onsubmit="return false">
+							<table id="table-5" align="center">
+								<tr>
+									<th colspan="2" style="text-align:center;">修改密码</th>
+								</tr>
+								<tr>
+									<td>原始密码</td>
+									<td><input type="password" name="oldpsw" placeholder="请输入原始密码" required="required"></td>
+								</tr>
+								<tr>
+									<td>新密码</td>
+									<td><input type="password" name="newpsw" placeholder="请输入新密码" required="required"></td>
+								</tr>
+								<tr>
+									<td>再次输入</td>
+									<td>
+										<input type="password" name="newpsw2" placeholder="请再次输入" required="required" onchange="pswValidate()">
+										<h5 class="twicePSWmsg"></h5>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<input type="submit" class="btn btn-success" value="SUBMIT" name="changePSWbutton" onclick="changepsw()"><br/>
+										<h5 class="changePSWmsg"></h5>
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+					
+					<!-- 部门职位 -->
+					<div id="DP" class="allpage">
+						<table id="table-5" align="center">
+							<tr>
+								<c:forEach items="${sessionScope.depts}" var="d">
+									<th style="text-align:center;">${d.dName}</th>
+								</c:forEach>
+							</tr>
+							<tr>
+								<c:forEach items="${sessionScope.depts}" var="d">
+									<td>
+										<ul>
+											<c:forEach items="${d.positions}" var="p">
+												<li>${p.pName}</li>
+											</c:forEach>
+										</ul>
+									</td>
+								</c:forEach>
+							</tr>
+						</table>
+					</div>
+					
 				</div>
 			</div>
 	    </div>

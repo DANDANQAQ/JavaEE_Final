@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.iotek.ssm.entity.ClockRecord;
+import com.iotek.ssm.entity.Info;
 import com.iotek.ssm.entity.User;
+import com.iotek.ssm.entity.Wages;
 import com.iotek.ssm.service.ClockRecordService;
 import com.iotek.ssm.service.DepartmentService;
 import com.iotek.ssm.service.EmploymentService;
@@ -19,6 +21,7 @@ import com.iotek.ssm.service.InfoService;
 import com.iotek.ssm.service.InterviewService;
 import com.iotek.ssm.service.PositionService;
 import com.iotek.ssm.service.TrainService;
+import com.iotek.ssm.service.WagesService;
 
 @RequestMapping("/employee")
 @Controller
@@ -37,6 +40,33 @@ public class EmployeeController {
 	private PositionService positionService;
 	@Autowired
 	private ClockRecordService clockRecordService;
+	@Autowired
+	private WagesService wagesService;
+	@RequestMapping("findWages")
+	public String findWages(HttpSession session,Model model,Integer year,Integer month) {
+		model.addAttribute("toWages", "toWages");
+		User user = (User) session.getAttribute("nowUser");
+		Wages wages = wagesService.findWagesByuIdYearMonth(user.getuId(), year, month);
+		session.setAttribute("wages", wages);
+		session.setAttribute("yearw", year);
+		session.setAttribute("monthw", month);
+		return "employee/index";
+	}
+	@RequestMapping("personalInformation")
+	public String personalInformation(HttpSession session,String realName,Integer age,String phone,String email,String hobby) {
+		User user = (User) session.getAttribute("nowUser");
+		int uId = user.getuId();
+		Info info = infoService.queryInfoByuId(uId);
+		info.setRealName(realName);
+		info.setAge(age);
+		info.setPhone(phone);
+		info.setAge(age);
+		info.setHobby(hobby);
+		infoService.updateInfo(info);
+		info = infoService.queryInfoByuId(uId);
+		session.setAttribute("info", info);
+		return "employee/index";
+	}
 	@RequestMapping("clockRecord")
 	public String clockRecord(HttpSession session,Model model,Integer year,Integer month) {
 		model.addAttribute("toClockRecords", "toClockRecords");

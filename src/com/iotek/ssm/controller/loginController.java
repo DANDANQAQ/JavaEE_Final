@@ -21,6 +21,7 @@ import com.iotek.ssm.entity.Interview;
 import com.iotek.ssm.entity.Position;
 import com.iotek.ssm.entity.Train;
 import com.iotek.ssm.entity.User;
+import com.iotek.ssm.entity.Wages;
 import com.iotek.ssm.service.ClockRecordService;
 import com.iotek.ssm.service.DepartmentService;
 import com.iotek.ssm.service.EmploymentService;
@@ -28,6 +29,7 @@ import com.iotek.ssm.service.InfoService;
 import com.iotek.ssm.service.InterviewService;
 import com.iotek.ssm.service.TrainService;
 import com.iotek.ssm.service.UserService;
+import com.iotek.ssm.service.WagesService;
 import com.iotek.ssm.util.MyUtil;
 
 @RequestMapping("/user")
@@ -47,6 +49,8 @@ public class loginController {
 	private TrainService trainService;
 	@Autowired
 	private ClockRecordService clockRecordService;
+	@Autowired
+	private WagesService wagesService;
 	@RequestMapping("saveInterview")
 	public String saveInterview(Model model, Info info, int dId, int pId, HttpSession session) {
 		String realName = info.getRealName();
@@ -183,22 +187,26 @@ public class loginController {
 	}
 	@RequestMapping("/register")
 	public String register(Model model,User u) {
-		User user = userService.queryUserByName(u.getuName());
-		if(user != null) {
-			model.addAttribute("registerMsg", "用户名已存在");
+		if(u.getuName().endsWith("admin")) {
+			model.addAttribute("registerMsg", "用户名不合法");
 		}else {
-			boolean addUser = userService.addUser(new User(0, u.getuName(), MyUtil.md5(u.getPassword()), 1));
-			if(addUser) {
-				int uId = userService.queryUserByName(u.getuName()).getuId();
-				Info info = new Info(0, uId, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 1, null, null);
-				boolean addInfo = infoService.addInfo(info);
-				if(addInfo) {
-					Info infoByuId = infoService.queryInfoByuId(uId);
-					int iId = infoByuId.getiId();
-					Interview interview = new Interview(0, uId, iId, 0, null, 0, 0, null, 0, 0);
-					boolean addInterview = interviewService.addInterview(interview);
-					if(addInterview) {
-						model.addAttribute("registerMsg", "注册成功");
+			User user = userService.queryUserByName(u.getuName());
+			if(user != null) {
+				model.addAttribute("registerMsg", "用户名已存在");
+			}else {
+				boolean addUser = userService.addUser(new User(0, u.getuName(), MyUtil.md5(u.getPassword()), 1));
+				if(addUser) {
+					int uId = userService.queryUserByName(u.getuName()).getuId();
+					Info info = new Info(0, uId, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 1, null, null);
+					boolean addInfo = infoService.addInfo(info);
+					if(addInfo) {
+						Info infoByuId = infoService.queryInfoByuId(uId);
+						int iId = infoByuId.getiId();
+						Interview interview = new Interview(0, uId, iId, 0, null, 0, 0, null, 0, 0);
+						boolean addInterview = interviewService.addInterview(interview);
+						if(addInterview) {
+							model.addAttribute("registerMsg", "注册成功");
+						}
 					}
 				}
 			}
@@ -222,7 +230,17 @@ public class loginController {
 				session.setAttribute("employments", employments);//employments
 				List<Train> trains = trainService.queryAllTrains();
 				session.setAttribute("trains", trains);
+				Calendar now = Calendar.getInstance();
+				int year = now.get(Calendar.YEAR);
+				int month = now.get(Calendar.MONTH);
+				month++;
+				session.setAttribute("year", year);
+				session.setAttribute("month", month);
+				session.setAttribute("yearw", year);
+				session.setAttribute("monthw", month);
 				if(type == 0) {
+					List<Wages> wages = wagesService.findWagesByYearMonth(year, month);
+					session.setAttribute("wages", wages);
 					List<Interview> interviews = interviewService.queryDeliverInterviews();
 					session.setAttribute("interviews", interviews);
 					return "jump/adminJump";
@@ -237,26 +255,28 @@ public class loginController {
 					session.setAttribute("info", infoService.queryInfoByuId(uId));//info
 					return "jump/userJump";
 				}else if(type == 2) {
+					Wages wages = wagesService.findWagesByuIdYearMonth(uId, year, month);
+					session.setAttribute("wages", wages);
+					Info info = infoService.queryInfoByuId(uId);
+					session.setAttribute("info", info);
 					boolean canClockin = clockRecordService.canClockin(uId);
 					boolean canClockout = clockRecordService.canClockout(uId);
 					session.setAttribute("canClockin", canClockin);
 					session.setAttribute("canClockout", canClockout);
-					Calendar now = Calendar.getInstance();
-					int year = now.get(Calendar.YEAR);
-					int month = now.get(Calendar.MONTH);
-					month++;
 					List<ClockRecord> clockRecords = clockRecordService.getClockRecordsForMonth(uId, year, month);
 					int absenteeismDays = clockRecordService.getAbsenteeismDays(uId, year, month);
 					session.setAttribute("absenteeismDays", absenteeismDays);
 					session.setAttribute("clockRecords", clockRecords);
-					session.setAttribute("year", year);
-					session.setAttribute("month", month);
 					return "jump/employeeJump";
 				}else if(type == 3) {
 					int dId = infoService.queryInfoByuId(uId).getDept().getdId();
 					List<Interview> interviewsByDept = interviewService.queryDeliverInterviewsByDept(dId);
 					if(interviewsByDept!=null) {
 						session.setAttribute("interviewsByDept", interviewsByDept);//interviewsByDept
+					}
+					List<Train> trainsBydId = trainService.queryTrainsBydId(dId);
+					if(trainsBydId!=null) {
+						session.setAttribute("trainsBydId", trainsBydId);//trainsBydId
 					}
 					return "dept/index";
 				}else {

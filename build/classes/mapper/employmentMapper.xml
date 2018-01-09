@@ -37,6 +37,16 @@
 		left join 
 			positions p ON e.p_id=p.p_id
 	</select>	
+	<select id="queryEmploymentsByDept" parameterType="int" resultMap="em">
+		SELECT 
+			*
+		FROM 
+			employments e
+		left join 
+			departments d ON e.d_id=d.d_id AND e.d_id=#{dId}
+		left join 
+			positions p ON e.p_id=p.p_id
+	</select>	
 	<resultMap type="Employment" id="em">
 		<id property="eId" column="e_id"/>
 		<result property="requirement" column="requirement"/>

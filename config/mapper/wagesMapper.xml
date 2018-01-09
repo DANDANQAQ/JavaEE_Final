@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iotek.ssm.dao.WagesDao">
+	<insert id="addWages" parameterType="Wages" keyProperty="wId">
+		INSERT INTO
+			wages
+			(u_id,realwages,basicwages,performance,overtimewages,bonus,forfiet,social,year,month)
+		VALUES
+			(#{uId},#{realwages},#{basicwages},#{performance},#{overtimewages},
+			#{bonus},#{forfiet},#{social},#{year},#{month})
+	</insert>
+	
+	<update id="updateWages" parameterType="Wages">
+		UPDATE
+			wages
+		SET
+			u_id=#{uId},
+			realwages=#{realwages},
+			basicwages=#{basicwages},
+			performance=#{performance},
+			overtimewages=#{overtimewages},
+			bonus=#{bonus},
+			forfiet=#{forfiet},
+			social=#{social},
+			year=#{year},
+			month=#{month}
+		WHERE
+			w_id=#{wId}
+	</update>
+	
+	<select id="queryWagesByuIdYearMonth" resultType="Wages">
+		SELECT 
+			*
+		FROM 
+			wages
+		WHERE
+			u_id=#{uId} AND year=#{year} AND month=#{month}
+	</select>	
+	
+	<select id="queryWagesByYearMonth" resultType="Wages">
+		SELECT 
+			*
+		FROM 
+			wages
+		WHERE
+			year=#{year} AND month=#{month}
+	</select>	
+	
+</mapper>

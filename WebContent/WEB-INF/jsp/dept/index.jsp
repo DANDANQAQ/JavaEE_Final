@@ -9,6 +9,33 @@
 <title>部门主页</title>
 <link href="${pageContext.request.contextPath}/css3/bootstrap.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/css3/main.css" rel="stylesheet">
+<style type="text/css">
+	/* Table Head */
+	#table-6 thead th {
+		background-color: rgb(128, 102, 160);
+		color: #fff;
+		border-bottom-width: 0;
+	}
+	
+	/* Column Style */
+	#table-6 td {
+	color: #000;	
+	}
+	/* Heading and Column Style */
+	#table-6 tr, #table-6 th {
+		border-width: 1px;
+		border-style: solid;
+		border-color: rgb(128, 102, 160);
+	}
+	
+	/* Padding and font style */
+	#table-6 td, #table-6 th {
+		padding: 5px 10px;
+		font-size: 12px;
+		font-family: Verdana;
+		font-weight: bold;
+	}
+</style>
 <script type="text/javascript" src="${pageContext.request.contextPath}/JS/jquery-1.7.2.js"></script>
 <script type="text/javascript">
 	$(function(){
@@ -19,12 +46,20 @@
 		if(${not empty sessionScope.interviewsByDept}){
 			alert("部门有应聘者，安排一下");
 		}
+		if(${not empty sessionScope.trainsBydId}){
+			alert("部门有相关培训通知，请注意查收");
+		}
 	}
-	window.setTimeout("later();",1000);
+	window.setTimeout("later();",500);
 	
 	function mainpage(){
 		$(".allpage").hide();
 		$("#index").fadeIn();
+		return false;
+	}
+	function trainPage(){
+		$(".allpage").hide();
+		$("#trainPage").fadeIn();
 		return false;
 	}
 	function interviewNotice(){
@@ -84,7 +119,7 @@
 	    <div class="navbar-collapse collapse">
 	      <ul class="nav navbar-nav navbar-right">
 	        <li><a href="#" onclick="return interviewNotice()">面试通知</a></li>
-	        <li><a href="#">培训通知</a></li>
+	        <li><a href="#" onclick="return trainPage()">培训通知</a></li>
 	        <li><a href="#" onclick="return changePSWpage()">效绩管理</a></li>
 	        <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
 	      </ul>
@@ -104,6 +139,7 @@
 						<p>部门管理</p>
 						<p>Please, consider to register to <a href="http://eepurl.com/IcgkX">our newsletter</a> to be updated with our latest themes and freebies. Like always, you can use this theme in any project freely. Share it with your friends.</p>
 					</div>
+					
 					<!-- 面试通知 -->
 					<div id="interviewNotice" class="allpage">
 						<table align="center" border="soild 1px" cellpadding="10px" cellspacing="0">
@@ -121,6 +157,28 @@
 										<f:formatDate value="${i.deliverTime}" pattern="yyyy-MM-dd"/>
 									</td>
 									<td><input type="submit" name="${i.uId}" class="btn btn-success" value="面试" onclick="interview(this)"></td>
+								</tr>
+							</c:forEach>
+						</table>
+					</div>
+					
+					<!-- 培训通知 -->
+					<div id="trainPage" class="allpage">
+						<table align="center" id="table-6">
+							<tr>
+								<th>编号</th>
+								<th>培训内容</th>
+								<th>部门</th>
+								<th>培训时间</th>
+							</tr>
+							<c:forEach items="${sessionScope.trainsBydId}" var="t">
+								<tr>
+									<td>${t.tId}</td>
+									<td>${t.tName}</td>
+									<td>${t.department.dName}</td>
+									<td>
+										<f:formatDate value="${t.tTime}" pattern="yyyy-MM-dd"/>
+									</td>
 								</tr>
 							</c:forEach>
 						</table>

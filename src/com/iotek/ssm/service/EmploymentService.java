@@ -10,4 +10,5 @@ public interface EmploymentService {
 	public boolean updateEmployment(Employment employment);
 	
 	public List<Employment> queryAllEmployments();
+	public List<Employment> queryEmploymentsByDept(int dId);
 }

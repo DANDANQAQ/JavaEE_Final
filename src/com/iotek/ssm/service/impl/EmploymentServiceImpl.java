@@ -51,4 +51,9 @@ public class EmploymentServiceImpl implements EmploymentService {
 		return employmentDao.queryAllEmployments();
 	}
 
+	@Override
+	public List<Employment> queryEmploymentsByDept(int dId) {
+		return employmentDao.queryEmploymentsByDept(dId);
+	}
+
 }

@@ -11,12 +11,16 @@ import org.springframework.stereotype.Service;
 
 import com.iotek.ssm.dao.ClockRecordDao;
 import com.iotek.ssm.entity.ClockRecord;
+import com.iotek.ssm.entity.Wages;
 import com.iotek.ssm.service.ClockRecordService;
+import com.iotek.ssm.service.WagesService;
 
 @Service("clockRecordService")
 public class ClockRecordServiceImpl implements ClockRecordService {
 	@Autowired
 	private ClockRecordDao clockRecordDao;
+	@Autowired
+	private WagesService wagesService;
 	@Override
 	public boolean canClockin(int uId) {
 		Calendar now = Calendar.getInstance();
@@ -24,9 +28,9 @@ public class ClockRecordServiceImpl implements ClockRecordService {
 		int month = now.get(Calendar.MONTH);
 		int day = now.get(Calendar.DAY_OF_MONTH);
 		int hour = now.get(Calendar.HOUR_OF_DAY);
-//		if(hour < 6 || hour > 12) {	//12点后算旷工，不给打卡
-//			return false;
-//		}
+		if(hour < 6) {
+			return false;
+		}
 		ClockRecord record = clockRecordDao.queryClockRecordByuIdYearMonthDay(uId, year, month, day);
 		if(record == null) {
 			record = new ClockRecord(0, uId, year, month, day, null, null, 0, 0, 0);
@@ -49,9 +53,9 @@ public class ClockRecordServiceImpl implements ClockRecordService {
 		int month = now.get(Calendar.MONTH);
 		int day = now.get(Calendar.DAY_OF_MONTH);
 		int hour = now.get(Calendar.HOUR_OF_DAY);
-//		if(hour < 9) {
-//			return false;
-//		}
+		if(hour < 9) {
+			return false;
+		}
 		ClockRecord record = clockRecordDao.queryClockRecordByuIdYearMonthDay(uId, year, month, day);
 		if(record == null) {
 			record = new ClockRecord(0, uId, year, month, day, null, null, 0, 0, 0);
@@ -111,11 +115,32 @@ public class ClockRecordServiceImpl implements ClockRecordService {
 		ClockRecord record = clockRecordDao.queryClockRecordByuIdYearMonthDay(uId, year, month, day);
 		record.setClockout(new Date());
 		record.setAbsenteeism(1);
+		int late = record.getLate();
 		int early = 18 - hour;
 		if(early > 0) {
 			record.setEarly(early);
 		}
 		clockRecordDao.updateClockRecord(record);
+		//下班打卡成功，结算工资
+		Wages wages = wagesService.findWagesByuIdYearMonth(uId, year, month);
+		if(wages == null) {
+			wages = new Wages(0, uId, 0, 0, 0, 0, 0, 0, 0, year, month);
+			wagesService.addWages(wages);
+		}
+		wages.setBasicwages(wages.getBasicwages()+400);
+		int lateEarly = late + early;
+		double forfiet = 0;
+		if(lateEarly > 2) {  //TODO 添加奖惩信息
+			forfiet = -400;
+		}else {
+			forfiet = lateEarly * (-100);
+		}
+		wages.setForfiet(wages.getForfiet()+forfiet);
+		if(wages.getBasicwages() > 0) {
+			wages.setSocial(wages.getBasicwages()*(-0.1));
+		}
+		wages.setRealwages(wages.getBasicwages()+wages.getBonus()+wages.getForfiet()+wages.getOvertimewages()+wages.getPerformance()+wages.getSocial());
+		wagesService.updateWages(wages);
 		return true;
 	}
 

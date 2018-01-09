@@ -41,9 +41,14 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/JS/jquery-1.7.2.js"></script>
 <script type="text/javascript">
 	$(function(){
+		$("#year").find("option[value='"+${sessionScope.year}+"']").attr("selected",true);
+		$("#month").find("option[value='"+${sessionScope.month}+"']").attr("selected",true);
 		if(${not empty requestScope.positionMsg}){
 			$(".allpage").hide();
 			$("#employeeMsg").show();
+		}else if(${not empty requestScope.toWages}){
+			$(".allpage").hide();
+			$("#wages").show();
 		}else if(${not empty requestScope.toDeptPage}){
 			$(".allpage").hide();
 			$("#DP").show();
@@ -63,6 +68,11 @@
 	function Train(){
 		$(".allpage").hide();
 		$("#train").fadeIn();
+		return false;
+	}
+	function wages(){
+		$(".allpage").hide();
+		$("#wages").fadeIn();
 		return false;
 	}
 	function resumeManage(){
@@ -364,7 +374,7 @@
             <li><a href="#" onclick="return Train()">培训管理</a></li>
             <li><a href="#">员工管理</a></li>
             <li><a href="#">奖惩管理</a></li>
-            <li><a href="#">薪资管理</a></li>
+            <li><a href="#" onclick="return wages()">薪资管理</a></li>
             <li><a href="#">工资异议</a></li>
             <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
           </ul>
@@ -383,6 +393,63 @@
 						<h1>Hi, ${sessionScope.nowUser.uName}</h1>
 						<p>管理员你好！</p>
 						<p>Please, consider to register to <a href="http://eepurl.com/IcgkX">our newsletter</a> to be updated with our latest themes and freebies. Like always, you can use this theme in any project freely. Share it with your friends.</p>
+					</div>
+					
+					<!-- 薪资管理 -->
+					<div id="wages" class="allpage">
+						<form action="${pageContext.request.contextPath}/admin/findWages" method="post">
+							<select name="year" id="year">
+								<option value="2018">2018</option>
+							</select>年
+							<select name="month" id="month">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+							</select>月
+							<input type="submit" id="td-invited" class="btn btn-success" value="查询">
+						</form>
+						<table id="table-2">
+							<tr>
+								<th>编号</th>
+								<th>员工编号</th>
+								<th>总工资</th>
+								<th>基本工资</th>
+								<th>绩效工资</th>
+								<th>加班工资</th>
+								<th>奖励工资</th>
+								<th>惩罚工资</th>
+								<th>社保</th>
+							</tr>
+							<c:if test="${empty sessionScope.wages}">
+								<tr>
+									<td colspan="9">暂无工资记录</td>
+								</tr>
+							</c:if>
+							<c:if test="${not empty sessionScope.wages}">
+								<c:forEach items="${sessionScope.wages}" var="w">
+									<tr>
+										<td>${w.wId}</td>
+										<td>${w.uId}</td>
+										<td>${w.realwages}</td>
+										<td>${w.basicwages}</td>
+										<td>${w.performance}</td>
+										<td>${w.overtimewages}</td>
+										<td>${w.bonus}</td>
+										<td>${w.forfiet}</td>
+										<td>${w.social}</td>
+									</tr>
+								</c:forEach>
+							</c:if>
+						</table>
 					</div>
 					
 					<!-- 培训管理 -->
@@ -542,17 +609,13 @@
 							<input type="submit" class="btn btn-success" value="提交">
 						</form>
 						<table id="table-2" align="center">
-							<tr>
-								<c:forEach items="${sessionScope.depts}" var="d">
-									<th><ul><li>
+							<c:forEach items="${sessionScope.depts}" var="d">
+								<tr>
+									<th>
 										${d.dName}
 										<a href="#" name="${d.dId}" onclick="return editDeptName(this)">[E]</a>
 										<a href="${pageContext.request.contextPath}/admin/delDept?dId=${d.dId}">[D]</a>
-									</li></ul></th>
-								</c:forEach>
-							</tr>
-							<tr>
-								<c:forEach items="${sessionScope.depts}" var="d">
+									</th>
 									<td>
 										<ul>
 											<c:forEach items="${d.positions}" var="p">
@@ -564,10 +627,6 @@
 											</c:forEach>
 										</ul>
 									</td>
-								</c:forEach>
-							</tr>
-							<tr>
-								<c:forEach items="${sessionScope.depts}" var="d">
 									<td>
 										<form action="${pageContext.request.contextPath}/admin/addPosition">
 											<input type="hidden" name="dId" value="${d.dId}">
@@ -575,8 +634,8 @@
 											<input type="submit" class="btn btn-success" value="提交">
 										</form>
 									</td>
-								</c:forEach>
-							</tr>
+								</tr>
+							</c:forEach>	
 						</table>
 						<form action="${pageContext.request.contextPath}/admin/addDept">
 							<h4>添加部门</h4>

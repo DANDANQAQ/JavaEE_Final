@@ -40,11 +40,8 @@
 		late,early,absenteeism
 										
 	wages
-		w_id,u_id,basic_wages,overtime_wages,bonus,forfeit,social,real_wages
-	
-	wages_records
-		wr_id,u_id,basic_wages,overtime_wages,bonus,forfeit,social,real_wages,year,month
+		w_id,u_id,realwages,basicwages,performance,overtimewages,bonus,forfeit,social,year,month
 	
 	reward_punishment
-		rp_id,u_id,year,month,type,money,msg,status
+		rp_id,u_id,year,month,type,money,msg
 	
