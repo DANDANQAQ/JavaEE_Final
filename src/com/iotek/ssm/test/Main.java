@@ -70,10 +70,6 @@ public class Main {
 	
 	@Test
 	public void test4() {
-		List<Info> infos = infoDao.queryAllInfos();
-		System.out.println(infos);
-		System.out.println(infos.get(1).getDept());
-		System.out.println(infos.get(1).getPosition());
 		Info info = infoDao.queryInfoByuId(2);
 		System.out.println(info);
 	}

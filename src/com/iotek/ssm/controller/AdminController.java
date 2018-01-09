@@ -59,6 +59,20 @@ public class AdminController {
 		binder.registerCustomEditor(Date.class, 
 				new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
 	}
+	@RequestMapping("changeEmp")
+	public String changeEmp(HttpSession session,Model model,Integer emp) {
+		model.addAttribute("toEMP", "toEMP");
+		if(emp == 1) {
+			List<Info> infos = infoService.queryInfosByServingStaff();
+			session.setAttribute("infos", infos);
+			session.setAttribute("emp", 1);
+		}else {
+			List<Info> infos = infoService.queryInfosByNotServingStaff();
+			session.setAttribute("infos", infos);
+			session.setAttribute("emp", 2);
+		}
+		return "admin/index";
+	}
 	@RequestMapping("findWages")
 	public String findWages(HttpSession session,Model model,Integer year,Integer month) {
 		model.addAttribute("toWages", "toWages");
@@ -145,6 +159,7 @@ public class AdminController {
 			
 			queryUserByNameOld.setuName(deptSpellNew);
 			queryUserByNameOld.setPassword(MyUtil.md5(deptSpellNew));
+			userService.updateUser(queryUserByNameOld);
 			
 			department.setdName(deptName);
 			departmentService.updateDepartment(department);
@@ -166,9 +181,9 @@ public class AdminController {
 		String deptSpellOld = fullSpellOld+"admin";
 		User queryUserByNameOld = userService.queryUserByName(deptSpellOld);
 		if(queryUserByNameOld != null) {
-			userService.delUserById(queryUserByNameOld.getuId());
 			Info info = infoService.queryInfoByuId(queryUserByNameOld.getuId());
 			infoService.delInfoById(info.getiId());
+			userService.delUserById(queryUserByNameOld.getuId());
 		}
 		
 		departmentService.delDepartmentById(dId);
@@ -186,13 +201,14 @@ public class AdminController {
 			List<Department> depts = departmentService.queryAllDepts();
 			session.setAttribute("depts", depts);//depts
 			//Îª²¿ÃÅ×¢²áÕËºÅ
+			Department queryDeptByName = departmentService.queryDeptByName(deptName);
 			String fullSpell = ChineseToEnglish2.getFullSpell(deptName);
 			String deptSpell = fullSpell+"admin";
 			User queryUserByName = userService.queryUserByName(deptSpell);
 			if(queryUserByName == null) {
-				boolean addUser = userService.addUser(new User(0, deptSpell, MyUtil.md5(deptSpell), 3));
+				userService.addUser(new User(0, deptSpell, MyUtil.md5(deptSpell), 3));
 				int uId = userService.queryUserByName(deptSpell).getuId();
-				Info info = new Info(0, uId, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 3, null, null);
+				Info info = new Info(0, uId, null, null, null, null, null, null, queryDeptByName, null, null, null, null, null, null, 0, 3, null, null);
 				infoService.addInfo(info);
 			}
 		}
@@ -203,9 +219,9 @@ public class AdminController {
 	@RequestMapping("delPosition")
 	public String delPosition(Model model,Integer pId,HttpSession session) {
 		model.addAttribute("toDeptPage", "toDeptPage");
-		List<Info> infos = infoService.queryAllInfos();
+		List<Info> infos = infoService.queryInfosByServingStaff();
 		for (Info info : infos) {
-			if(info.getType()==2 && info.getPosition().getpId()==pId) {
+			if(info.getPosition().getpId()==pId) {
 				return "admin/index";
 			}
 		}

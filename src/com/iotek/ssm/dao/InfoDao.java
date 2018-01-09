@@ -9,6 +9,7 @@ public interface InfoDao {
 	public int delInfoById(int iId);
 	public int updateInfo(Info info);
 	
-	public List<Info> queryAllInfos();
 	public Info queryInfoByuId(int uId);
+	public List<Info> queryInfosByServingStaff();
+	public List<Info> queryInfosByNotServingStaff();
 }

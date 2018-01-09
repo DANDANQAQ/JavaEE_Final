@@ -43,12 +43,16 @@
 	$(function(){
 		$("#year").find("option[value='"+${sessionScope.year}+"']").attr("selected",true);
 		$("#month").find("option[value='"+${sessionScope.month}+"']").attr("selected",true);
+		$("#emp").find("option[value='"+${sessionScope.emp}+"']").attr("selected",true);
 		if(${not empty requestScope.positionMsg}){
 			$(".allpage").hide();
 			$("#employeeMsg").show();
 		}else if(${not empty requestScope.toWages}){
 			$(".allpage").hide();
 			$("#wages").show();
+		}else if(${not empty requestScope.toEMP}){
+			$(".allpage").hide();
+			$("#employeeManage").show();
 		}else if(${not empty requestScope.toDeptPage}){
 			$(".allpage").hide();
 			$("#DP").show();
@@ -59,6 +63,7 @@
 			$(".allpage").hide();
 			$("#index").show();
 		}
+		run();
 	})
 	function mainpage(){
 		$(".allpage").hide();
@@ -68,6 +73,11 @@
 	function Train(){
 		$(".allpage").hide();
 		$("#train").fadeIn();
+		return false;
+	}
+	function employeeManage(){
+		$(".allpage").hide();
+		$("#employeeManage").fadeIn();
 		return false;
 	}
 	function wages(){
@@ -356,6 +366,63 @@
 			}
 		})
 	}
+	function startTime(){
+		var today=new Date();
+		var h=today.getHours();
+		var m=today.getMinutes();
+		var s=today.getSeconds();
+		// add a zero in front of numbers<10
+		m=checkTime(m);
+		s=checkTime(s);
+		document.getElementById('txt').innerHTML=h+":"+m+":"+s;
+		t=setTimeout('startTime()',500);
+	}
+	function checkTime(i){
+		if(i<10){
+			i="0"+i;
+		}
+		return i;
+	}
+
+	function run(){
+		var date = new Date();
+		var hour = date.getHours();
+		if(hour>=8 && hour<12){
+			document.getElementById("h1").innerHTML="早上好！欢迎登录主页";
+		}else if(hour>=12 && hour<14){
+			document.getElementById("h1").innerHTML="中午好！该休息了";
+		}else if(hour>=14 && hour<18){
+			document.getElementById("h1").innerHTML="下午好！欢迎登录主页";
+		}else if(hour>=18 && hour<24){
+			document.getElementById("h1").innerHTML="晚上好！夜生活开始了！";
+		}else{
+			document.getElementById("h1").innerHTML="嚯！";
+		}
+		var week = getWeek(date);
+		document.getElementById("h2").innerHTML="今天是"+week;
+
+		startTime();
+	}
+	function getWeek(date){
+		var str = "";  
+		var week = date.getDay();  
+		if (week == 0) {  
+				str = "星期日";  
+		} else if (week == 1) {  
+				str = "星期一";  
+		} else if (week == 2) {  
+				str = "星期二";  
+		} else if (week == 3) {  
+				str = "星期三";  
+		} else if (week == 4) {  
+				str = "星期四";  
+		} else if (week == 5) {  
+				str = "星期五";  
+		} else if (week == 6) {  
+				str = "星期六";  
+		}
+		return str;
+	}
 </script>
 </head>
 <body>
@@ -372,7 +439,7 @@
             <li><a href="#" onclick="return recruitment()">招聘信息</a></li>
             <li><a href="#" onclick="return DP()">部门职位</a></li>
             <li><a href="#" onclick="return Train()">培训管理</a></li>
-            <li><a href="#">员工管理</a></li>
+            <li><a href="#" onclick="return employeeManage()">员工管理</a></li>
             <li><a href="#">奖惩管理</a></li>
             <li><a href="#" onclick="return wages()">薪资管理</a></li>
             <li><a href="#">工资异议</a></li>
@@ -391,8 +458,69 @@
 					<div id="index" class="allpage">
 						<img src="${pageContext.request.contextPath}/images/avtar.png" alt="Stanley">
 						<h1>Hi, ${sessionScope.nowUser.uName}</h1>
-						<p>管理员你好！</p>
-						<p>Please, consider to register to <a href="http://eepurl.com/IcgkX">our newsletter</a> to be updated with our latest themes and freebies. Like always, you can use this theme in any project freely. Share it with your friends.</p>
+						<h1 id="h1"></h1>
+						<h1 id="h2"></h1>
+						<h1 id="txt"></h1>
+					</div>
+					
+					<!-- 员工管理 -->
+					<div id="employeeManage" class="allpage">
+						<form action="${pageContext.request.contextPath}/admin/changeEmp" method="post">
+							<select id="emp" name="emp" onchange="changeEMP()">
+								<option value="1">在职员工</option>
+								<option value="2">离职员工</option>
+							</select>
+							<input type="submit" id="td-invited" class="btn btn-success" value="查询">
+						</form>
+						<c:if test="${sessionScope.emp==1}">
+							<table id="table-2" align="center">
+								<tr>
+									<th style="text-align:center;">编号</th>
+									<th style="text-align:center;">姓名</th>
+									<th colspan="4" style="text-align:center;">操作</th>
+								</tr>
+								<c:forEach items="${sessionScope.infos}" var="i">
+									<tr>
+										<td>${i.iId}</td>
+										<td>${i.realName}</td>
+										<td><a href="#">人事调动</a></td>
+										<td><a href="#">考勤</a></td>
+										<td><a href="#">工资发放</a></td>
+										<td><a href="#">开除</a></td>
+									</tr>
+								</c:forEach>
+							</table>
+						</c:if>
+						<c:if test="${sessionScope.emp==2}">
+							<c:if test="${empty sessionScope.infos}">
+								<table id="table-2" align="center">
+									<tr>
+										<th style="text-align:center;">编号</th>
+										<th style="text-align:center;">姓名</th>
+										<th style="text-align:center;">操作</th>
+									</tr>
+									<tr>
+										<td style="text-align:center;" colspan="3">暂无离职员工</td>
+									</tr>
+								</table>
+							</c:if>
+							<c:if test="${not empty sessionScope.infos}">
+								<table id="table-2" align="center">
+									<tr>
+										<th style="text-align:center;">编号</th>
+										<th style="text-align:center;">姓名</th>
+										<th style="text-align:center;">操作</th>
+									</tr>
+									<tr>
+										<c:forEach items="${sessionScope.infos}" var="i">
+											<td>${i.iId}</td>
+											<td>${i.realName}</td>
+											<td><a href="#">其他</a></td>
+										</c:forEach>
+									</tr>
+								</table>
+							</c:if>
+						</c:if>
 					</div>
 					
 					<!-- 薪资管理 -->
@@ -417,7 +545,7 @@
 							</select>月
 							<input type="submit" id="td-invited" class="btn btn-success" value="查询">
 						</form>
-						<table id="table-2">
+						<table id="table-2" align="center">
 							<tr>
 								<th>编号</th>
 								<th>员工编号</th>

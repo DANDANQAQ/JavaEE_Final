@@ -9,6 +9,7 @@ public interface InfoService {
 	public boolean delInfoById(int iId);
 	public boolean updateInfo(Info info);
 	
-	public List<Info> queryAllInfos();
+	public List<Info> queryInfosByServingStaff();
+	public List<Info> queryInfosByNotServingStaff();
 	public Info queryInfoByuId(int uId);
 }

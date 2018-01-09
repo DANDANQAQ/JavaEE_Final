@@ -135,9 +135,7 @@
 					<!-- 主界面 -->
 					<div id="index" class="allpage">
 						<img src="${pageContext.request.contextPath}/images/Service1.png" alt="Stanley">
-						<h1>Hi, ${sessionScope.nowUser.uName}</h1>
-						<p>部门管理</p>
-						<p>Please, consider to register to <a href="http://eepurl.com/IcgkX">our newsletter</a> to be updated with our latest themes and freebies. Like always, you can use this theme in any project freely. Share it with your friends.</p>
+						<h1>这里是${sessionScope.dept.dName}的管理页面</h1>
 					</div>
 					
 					<!-- 面试通知 -->

@@ -52,7 +52,7 @@ public class loginController {
 	@Autowired
 	private WagesService wagesService;
 	@RequestMapping("saveInterview")
-	public String saveInterview(Model model, Info info, int dId, int pId, HttpSession session) {
+	public String saveInterview(Model model, Info info, Integer dId, Integer pId, HttpSession session) {
 		String realName = info.getRealName();
 		String sex = info.getSex();
 		Integer age = info.getAge();
@@ -68,7 +68,7 @@ public class loginController {
 		String hobby = info.getHobby();
 		User user = (User) session.getAttribute("nowUser");
 		int uId = user.getuId();
-		if(dId != 0 && pId != 0) {
+		if(dId != null && pId != null) {
 			department = new Department(dId, null, null, null);
 			position = new Position(pId, null, dId, null, null);
 			Interview interview = interviewService.queryInterviewByuId(uId);
@@ -239,12 +239,15 @@ public class loginController {
 				session.setAttribute("yearw", year);
 				session.setAttribute("monthw", month);
 				if(type == 0) {
+					List<Info> infos = infoService.queryInfosByServingStaff();
+					session.setAttribute("infos", infos);
+					session.setAttribute("emp", 1);
 					List<Wages> wages = wagesService.findWagesByYearMonth(year, month);
 					session.setAttribute("wages", wages);
 					List<Interview> interviews = interviewService.queryDeliverInterviews();
 					session.setAttribute("interviews", interviews);
 					return "jump/adminJump";
-				}else if(type == 1) {
+				}else if(type == 1 || type == 4) {
 					Interview interview = interviewService.queryInterviewByuId(uId);
 					int invited = interview.getInvited();
 					if(invited==1) {
@@ -269,7 +272,9 @@ public class loginController {
 					session.setAttribute("clockRecords", clockRecords);
 					return "jump/employeeJump";
 				}else if(type == 3) {
-					int dId = infoService.queryInfoByuId(uId).getDept().getdId();
+					Department dept = infoService.queryInfoByuId(uId).getDept();
+					session.setAttribute("dept", dept);
+					int dId = dept.getdId();
 					List<Interview> interviewsByDept = interviewService.queryDeliverInterviewsByDept(dId);
 					if(interviewsByDept!=null) {
 						session.setAttribute("interviewsByDept", interviewsByDept);//interviewsByDept

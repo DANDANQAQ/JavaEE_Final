@@ -117,8 +117,11 @@ public class ClockRecordServiceImpl implements ClockRecordService {
 		record.setAbsenteeism(1);
 		int late = record.getLate();
 		int early = 18 - hour;
+		int overtimewages = 0;
 		if(early > 0) {
 			record.setEarly(early);
+		}else {
+			overtimewages = -80 * early;
 		}
 		clockRecordDao.updateClockRecord(record);
 		//下班打卡成功，结算工资
@@ -127,6 +130,7 @@ public class ClockRecordServiceImpl implements ClockRecordService {
 			wages = new Wages(0, uId, 0, 0, 0, 0, 0, 0, 0, year, month);
 			wagesService.addWages(wages);
 		}
+		wages.setOvertimewages(overtimewages);
 		wages.setBasicwages(wages.getBasicwages()+400);
 		int lateEarly = late + early;
 		double forfiet = 0;
@@ -136,10 +140,11 @@ public class ClockRecordServiceImpl implements ClockRecordService {
 			forfiet = lateEarly * (-100);
 		}
 		wages.setForfiet(wages.getForfiet()+forfiet);
-		if(wages.getBasicwages() > 0) {
+		double total = wages.getBasicwages()+wages.getBonus()+wages.getForfiet()+wages.getOvertimewages()+wages.getPerformance();
+		if(total > 0) {
 			wages.setSocial(wages.getBasicwages()*(-0.1));
 		}
-		wages.setRealwages(wages.getBasicwages()+wages.getBonus()+wages.getForfiet()+wages.getOvertimewages()+wages.getPerformance()+wages.getSocial());
+		wages.setRealwages(total+wages.getSocial());
 		wagesService.updateWages(wages);
 		return true;
 	}

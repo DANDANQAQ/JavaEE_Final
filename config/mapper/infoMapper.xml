@@ -46,13 +46,25 @@
 			i_id=#{iId}
 	</update>
 	
-	<select id="queryAllInfos" resultMap="Info_dept_posi">
+	<select id="queryInfosByServingStaff" resultMap="Info_dept_posi">
 		SELECT 
 			*
 		FROM 
 			info i,departments d,positions p
 		WHERE
-			i.d_id=d.d_id AND i.p_id=p.p_id
+			i.d_id=d.d_id AND i.p_id=p.p_id AND type=2
+	</select>	
+	<select id="queryInfosByNotServingStaff" resultMap="Info_dept_posi">
+		SELECT 
+			*
+		FROM 
+			info i 
+		left join 
+			departments d ON i.d_id=d.d_id
+		left join 
+			positions p ON i.p_id=p.p_id
+		WHERE
+			i.u_id=#{uId} AND type=4
 	</select>	
 	<select id="queryInfoByuId" parameterType="int" resultMap="Info_dept_posi">
 		SELECT 

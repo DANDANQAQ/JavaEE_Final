@@ -47,13 +47,18 @@ public class InfoServiceImpl implements InfoService {
 	}
 
 	@Override
-	public List<Info> queryAllInfos() {
-		return infoDao.queryAllInfos();
+	public Info queryInfoByuId(int uId) {
+		return infoDao.queryInfoByuId(uId);
 	}
 
 	@Override
-	public Info queryInfoByuId(int uId) {
-		return infoDao.queryInfoByuId(uId);
+	public List<Info> queryInfosByServingStaff() {
+		return infoDao.queryInfosByServingStaff();
+	}
+
+	@Override
+	public List<Info> queryInfosByNotServingStaff() {
+		return infoDao.queryInfosByNotServingStaff();
 	}
 
 }
