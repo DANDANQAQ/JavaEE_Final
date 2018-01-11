@@ -53,6 +53,9 @@
 		}else if(${not empty requestScope.toEMP}){
 			$(".allpage").hide();
 			$("#employeeManage").show();
+		}else if(${not empty requestScope.toEMPMsg}){
+			$(".allpage").hide();
+			$("#empMsg").show();
 		}else if(${not empty requestScope.toDeptPage}){
 			$(".allpage").hide();
 			$("#DP").show();
@@ -462,6 +465,47 @@
 						<h1 id="h2"></h1>
 						<h1 id="txt"></h1>
 					</div>
+										
+					<!-- 简历详情 -->
+					<div id="empMsg" class="allpage">
+						<table id="table-2" align="center">
+							<tr>
+								<th colspan="4" style="text-align:center;">员工信息</th>
+							</tr>
+							<tr>
+								<th>姓名</th>
+								<td id="realname2">${sessionScope.empMsg.realName}</td>
+								<th>性别</th>
+								<td id="sex2">${sessionScope.empMsg.sex}</td>
+							</tr>
+							<tr>
+								<th>年龄</th>
+								<td id="age2">${sessionScope.empMsg.age}</td>
+								<th>学历</th>
+								<td id="edu2">${sessionScope.empMsg.edu}</td>
+							</tr>
+							<tr>
+								<th>联系方式</th>
+								<td id="phone2">${sessionScope.empMsg.phone}</td>
+								<th>邮箱</th>
+								<td id="email2">${sessionScope.empMsg.email}</td>
+							</tr>
+							<tr>
+								<th>入职时间</th>
+								<td id="entryTime2">
+									<f:formatDate value="${sessionScope.empMsg.entryTime}" pattern="yyyy-MM-dd"/>	
+								</td>
+								<th>职位</th>
+								<td id="dp2">${sessionScope.empMsg.dept.dName}&nbsp;&nbsp;${sessionScope.empMsg.position.pName}</td>
+							</tr>
+							<tr>
+								<td colspan="4" style="text-align:center;">
+									<input type="submit" id="td-invited" class="btn btn-success" value="奖金" onclick="bonus()">
+									<input type="submit" class="btn btn-success" value="返回" onclick="employeeManage()">
+								</td>
+							</tr>
+						</table>
+					</div>
 					
 					<!-- 员工管理 -->
 					<div id="employeeManage" class="allpage">
@@ -482,7 +526,7 @@
 								<c:forEach items="${sessionScope.infos}" var="i">
 									<tr>
 										<td>${i.iId}</td>
-										<td>${i.realName}</td>
+										<td><a href="${pageContext.request.contextPath}/admin/findEmpMsg?uId=${i.uId}">${i.realName}</a></td>
 										<td><a href="#">人事调动</a></td>
 										<td><a href="#">考勤</a></td>
 										<td><a href="#">工资发放</a></td>
@@ -823,7 +867,7 @@
 					
 					<!-- 简历详情 -->
 					<div id="resumeDetails" class="allpage">
-						<table id="table-2" align="center">
+						<table id="table-2" align="center">	
 							<tr>
 								<th colspan="4" style="text-align:center;">简历详情</th>
 							</tr>

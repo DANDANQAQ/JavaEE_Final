@@ -59,6 +59,12 @@ public class AdminController {
 		binder.registerCustomEditor(Date.class, 
 				new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
 	}
+	@RequestMapping("findEmpMsg")
+	public String findEmpMsg(HttpSession session,Model model,Integer uId) {
+		model.addAttribute("toEMPMsg", "toEMPMsg");
+		session.setAttribute("empMsg", infoService.queryInfoByuId(uId));
+		return "admin/index";
+	}
 	@RequestMapping("changeEmp")
 	public String changeEmp(HttpSession session,Model model,Integer emp) {
 		model.addAttribute("toEMP", "toEMP");

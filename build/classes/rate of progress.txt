@@ -14,6 +14,8 @@
 		 
 	1.10 09:00	部门增删改自动注册注销部门账号     管理员查看在职离职员工信息
 	
+	1.11 09:00	管理员查看在职员工详细信息
+	
 	
 	interview
 		it_id,u_id,i_id,deliver,deliverTime,readed,invited,invitedTime,interview,enroll
