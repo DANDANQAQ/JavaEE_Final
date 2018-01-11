@@ -17,6 +17,12 @@
 		border-top-color: rgb(230, 189, 189);
 	}
 	#table-2 {
+		border-left-width: 5px;
+		border-left-style: solid;
+		border-left-color: rgb(230, 189, 189);
+		border-right-width: 5px;
+		border-right-style: solid;
+		border-right-color: rgb(230, 189, 189);
 		border-bottom-width: 5px;
 		border-bottom-style: solid;
 		border-bottom-color: rgb(230, 189, 189);
@@ -24,6 +30,12 @@
 	
 	/* Padding and font style */
 	#table-2 td, #table-2 th {
+		border-left-width: 3px;
+		border-left-style: solid;
+		border-left-color: rgb(230, 189, 189);
+		border-right-width: 3px;
+		border-right-style: solid;
+		border-right-color: rgb(230, 189, 189);
 		padding: 5px 10px;
 		font-size: 15px;
 		font-family: Verdana;
@@ -43,6 +55,10 @@
 	$(function(){
 		$("#year").find("option[value='"+${sessionScope.year}+"']").attr("selected",true);
 		$("#month").find("option[value='"+${sessionScope.month}+"']").attr("selected",true);
+		$("#yearb").find("option[value='"+${sessionScope.yearb}+"']").attr("selected",true);
+		$("#monthb").find("option[value='"+${sessionScope.monthb}+"']").attr("selected",true);
+		$("#yearc").find("option[value='"+${sessionScope.yearc}+"']").attr("selected",true);
+		$("#monthc").find("option[value='"+${sessionScope.monthc}+"']").attr("selected",true);
 		$("#emp").find("option[value='"+${sessionScope.emp}+"']").attr("selected",true);
 		if(${not empty requestScope.positionMsg}){
 			$(".allpage").hide();
@@ -50,6 +66,12 @@
 		}else if(${not empty requestScope.toWages}){
 			$(".allpage").hide();
 			$("#wages").show();
+		}else if(${not empty requestScope.toBonus}){
+			$(".allpage").hide();
+			$("#bfManage").show();
+		}else if(${not empty requestScope.toClockEmp}){
+			$(".allpage").hide();
+			$("#clockEmp").show();
 		}else if(${not empty requestScope.toEMP}){
 			$(".allpage").hide();
 			$("#employeeManage").show();
@@ -73,9 +95,20 @@
 		$("#index").fadeIn();
 		return false;
 	}
+	function bfManage(){
+		$(".allpage").hide();
+		$("#bfManage").fadeIn();
+		return false;
+	}
 	function Train(){
 		$(".allpage").hide();
 		$("#train").fadeIn();
+		return false;
+	}
+	function bonus(obj){
+		var uId = $(obj).attr("name");
+		$("input[name=bonusuId]").val(uId);
+		$("#bonus").fadeIn();
 		return false;
 	}
 	function employeeManage(){
@@ -331,6 +364,67 @@
 			}
 		})
 	}
+	function transfer(obj){
+		var uId = $(obj).attr("name");
+		$.ajax({
+			url:"${pageContext.request.contextPath}/admin/transfer",
+			type:"post",
+			data:{uId:uId},
+			dataType:"JSON",
+			success:function(data){
+				$("#transfer-uId").text(uId);
+				$("input[name=transfer-uId]").val(uId);
+				$("#transfer-uName").text(data.realname);
+				$("#transfer-dId").find("option[value='"+data.dept.did+"']").attr("selected",true);
+				$("select[name=transfer-pId]").empty();
+				$("select[name=transfer-pId]").append(
+					"<option value="+data.position.pid+">"+data.position.pname+"</option>"
+				)
+				$("#transfer").fadeIn();
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+		return false;
+	}
+	function doTransfer(){
+		var uId = $("input[name=transfer-uId]").val();
+		var dId = $("select[name=transfer-dId]").val();
+		var pId = $("select[name=transfer-pId]").val();
+		$.ajax({
+			url:"${pageContext.request.contextPath}/admin/doTransfer",
+			type:"post",
+			data:{uId:uId,dId:dId,pId:pId},
+			dataType:"text",
+			success:function(data){
+				alert(data);
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+	}
+	function transferChoiceDept(obj){
+		var $dId = $("select[name=transfer-dId]").val();
+		$.ajax({
+			url:"${pageContext.request.contextPath}/user/choiceDept",
+			type:"get",
+			data:{deptId:$dId},
+			dataType:"JSON",
+			success:function(data){
+				$("select[name=transfer-pId]").empty();
+				$.each(data,function(idx,item){
+					$("select[name=transfer-pId]").append(
+						"<option value="+item.pid+">"+item.pname+"</option>"
+					)
+				})
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+	}
 	function choiceDept(obj){
 		var $dId = $("select[name=dId]").val();
 		$("option[class=de]").remove();
@@ -426,6 +520,14 @@
 		}
 		return str;
 	}
+	function checkBonus(){
+		var money = $("input[name=bonusMoney]").val();
+		if(money<0){
+			alert("金额不能为负");
+			return false;
+		}
+		return true;
+	}
 </script>
 </head>
 <body>
@@ -443,7 +545,7 @@
             <li><a href="#" onclick="return DP()">部门职位</a></li>
             <li><a href="#" onclick="return Train()">培训管理</a></li>
             <li><a href="#" onclick="return employeeManage()">员工管理</a></li>
-            <li><a href="#">奖惩管理</a></li>
+            <li><a href="#" onclick="return bfManage()">奖惩管理</a></li>
             <li><a href="#" onclick="return wages()">薪资管理</a></li>
             <li><a href="#">工资异议</a></li>
             <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
@@ -464,6 +566,55 @@
 						<h1 id="h1"></h1>
 						<h1 id="h2"></h1>
 						<h1 id="txt"></h1>
+					</div>
+					
+					<!-- 奖惩管理 -->
+					<div id="bfManage" class="allpage">
+						<form action="${pageContext.request.contextPath}/admin/findBonus" method="post">
+							<select name="yearb" id="yearb">
+								<option value="2018">2018</option>
+							</select>年
+							<select name="monthb" id="monthb">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+							</select>月
+							<input type="submit" class="btn btn-success" value="查询">
+						</form>
+						<table id="table-2" align="center">
+							<tr>
+								<th>编号</th>
+								<th>奖惩员工ID</th>
+								<th>奖惩缘由</th>
+								<th>奖惩时间</th>
+								<th>奖惩金额</th>
+								<th>奖惩类型</th>
+							</tr>
+							<c:if test="${empty sessionScope.bFsByMonth}">
+								<tr><td colspan="6">本月暂无奖惩记录</td></tr>
+							</c:if>
+							<c:if test="${not empty sessionScope.bFsByMonth}">
+								<c:forEach items="${sessionScope.bFsByMonth}" var="b">
+									<tr>
+										<td>${b.bfId}</td>
+										<td>${b.uId}</td>
+										<td>${b.msg}</td>
+										<td>${b.year}-${b.month+1}-${b.day}</td>
+										<td>${b.money}</td>
+										<td>${b.type==0?'罚':'奖'}</td>
+									</tr>
+								</c:forEach>
+							</c:if>
+						</table>
 					</div>
 										
 					<!-- 简历详情 -->
@@ -500,11 +651,38 @@
 							</tr>
 							<tr>
 								<td colspan="4" style="text-align:center;">
-									<input type="submit" id="td-invited" class="btn btn-success" value="奖金" onclick="bonus()">
+									<input type="submit" class="btn btn-success" name="${sessionScope.empMsg.uId}" value="奖励" onclick="bonus(this)">
 									<input type="submit" class="btn btn-success" value="返回" onclick="employeeManage()">
 								</td>
 							</tr>
 						</table>
+					</div>
+					
+					<!-- bonus -->
+					<div id="bonus" class="allpage">
+						<form action="${pageContext.request.contextPath}/admin/bonus" method="post" onsubmit="return checkBonus()">
+							<table id="table-2" align="center">
+								<tr>
+									<th colspan="2" style="text-align:center;">奖励</th>
+								</tr>
+								<tr>
+									<td>奖励理由：</td>
+									<td>
+										<input type="hidden" name="bonusuId">
+										<input type="text" name="bonusReason" placeholder="输入奖励理由" required="required">
+									</td>
+								</tr>
+								<tr>
+									<td>金额：</td>
+									<td><input type="number" name="bonusMoney" placeholder="输入奖励金额" required="required"></td>
+								</tr>
+								<tr>
+									<td colspan="2" style="text-align:center;">
+										<input type="submit"class="btn btn-success" value="确认">
+									</td>
+								</tr>
+							</table>
+						</form>
 					</div>
 					
 					<!-- 员工管理 -->
@@ -514,7 +692,7 @@
 								<option value="1">在职员工</option>
 								<option value="2">离职员工</option>
 							</select>
-							<input type="submit" id="td-invited" class="btn btn-success" value="查询">
+							<input type="submit" class="btn btn-success" value="查询">
 						</form>
 						<c:if test="${sessionScope.emp==1}">
 							<table id="table-2" align="center">
@@ -525,10 +703,10 @@
 								</tr>
 								<c:forEach items="${sessionScope.infos}" var="i">
 									<tr>
-										<td>${i.iId}</td>
+										<td>${i.uId}</td>
 										<td><a href="${pageContext.request.contextPath}/admin/findEmpMsg?uId=${i.uId}">${i.realName}</a></td>
-										<td><a href="#">人事调动</a></td>
-										<td><a href="#">考勤</a></td>
+										<td><a href="#" name="${i.uId}" onclick="return transfer(this)">人事调动</a></td>
+										<td><a href="${pageContext.request.contextPath}/admin/clockEmp?uId=${i.uId}">考勤</a></td>
 										<td><a href="#">工资发放</a></td>
 										<td><a href="#">开除</a></td>
 									</tr>
@@ -557,7 +735,7 @@
 									</tr>
 									<tr>
 										<c:forEach items="${sessionScope.infos}" var="i">
-											<td>${i.iId}</td>
+											<td>${i.uId}</td>
 											<td>${i.realName}</td>
 											<td><a href="#">其他</a></td>
 										</c:forEach>
@@ -565,6 +743,105 @@
 								</table>
 							</c:if>
 						</c:if>
+					</div>
+							
+					<!-- 考勤记录 -->
+					<div id="clockEmp" class="allpage">
+						<table align="center">
+							<tr>
+								<td>
+									<form action="${pageContext.request.contextPath}/admin/clockEmp" method="post">
+										<select name="yearc" id="yearc">
+											<option value="2018">2018</option>
+										</select>年
+										<select name="monthc" id="monthc">
+											<option value="1">1</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="11">11</option>
+											<option value="12">12</option>
+										</select>月
+										<input type="submit" class="btn btn-success" value="查询">
+									</form>
+								</td>
+								<td>
+									<c:if test="${not empty sessionScope.absenteeismDays}">
+										这个月缺勤${sessionScope.absenteeismDays}天
+									</c:if>
+								</td>
+							</tr>
+						</table>
+						<table id="table-2" align="center">
+							<tr>
+								<th>上班时间</th>
+								<th>下班时间</th>
+								<th>迟到时间(小时)</th>
+								<th>早退时间(小时)</th>
+							</tr>
+							<c:choose>
+								<c:when test="${empty sessionScope.clockRecords}">
+									<tr>
+										<td colspan="4">暂无考勤</td>
+									</tr>
+								</c:when>
+								<c:otherwise>
+									<c:forEach items="${sessionScope.clockRecords}" var="c">
+										<tr>
+											<td>
+												<f:formatDate value="${c.clockin}" pattern="yyyy-MM-dd HH:mm:ss"/>
+											</td>
+											<td>
+												<f:formatDate value="${c.clockout}" pattern="yyyy-MM-dd HH:mm:ss"/>
+											</td>
+											<td>${c.late}</td>
+											<td>${c.early}</td>
+										</tr>
+									</c:forEach>
+								</c:otherwise>
+							</c:choose>
+							<tr>
+								<td colspan="4">
+									<input type="submit" class="btn btn-success" value="返回" onclick="employeeManage()">
+								</td>
+							</tr>
+						</table>
+					</div>
+					
+					<!-- 人事调动 -->
+					<div id="transfer" class="allpage">
+						<table id="table-2" align="center">
+							<tr>
+								<th colspan="4" style="text-align:center;">请选择调动的部门和职位</th>
+							</tr>
+							<tr>
+								<td id="transfer-uId"></td>
+								<td id="transfer-uName"></td>
+								<td>
+									<input type="hidden" name="transfer-uId">
+									<select name="transfer-dId" id="transfer-dId" onchange="transferChoiceDept()">
+										<c:forEach items="${sessionScope.depts}" var="d">
+											<option value="${d.dId}">${d.dName}</option>
+										</c:forEach>
+									</select>
+								</td>
+								<td>
+									<select name="transfer-pId" id="transfer-pId">
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<th colspan="4" style="text-align:center;">
+									<input type="submit" onclick="doTransfer()" class="btn btn-success" value="确认调动">
+								</th>
+							</tr>
+						</table>
 					</div>
 					
 					<!-- 薪资管理 -->
@@ -587,7 +864,7 @@
 								<option value="11">11</option>
 								<option value="12">12</option>
 							</select>月
-							<input type="submit" id="td-invited" class="btn btn-success" value="查询">
+							<input type="submit" class="btn btn-success" value="查询">
 						</form>
 						<table id="table-2" align="center">
 							<tr>
@@ -637,7 +914,7 @@
 											</li>
 										</c:forEach>
 									</ul>
-									<input type="submit" id="td-invited" class="btn btn-success" value="+" onclick="addTrainTable()">
+									<input type="submit" class="btn btn-success" value="+" onclick="addTrainTable()">
 								</td>
 								<td id="editTrainTable" class="allpage">
 									<table>
@@ -668,7 +945,7 @@
 										</tr>
 										<tr>
 											<td>
-												<input type="submit" id="td-invited" class="btn btn-success" value="修改" onclick="editTrain()">
+												<input type="submit" class="btn btn-success" value="修改" onclick="editTrain()">
 												<input type="submit" class="btn btn-success" value="取消" onclick="returnTrainsByEdit()">
 											</td>
 										</tr>
@@ -701,7 +978,7 @@
 										</tr>
 										<tr>
 											<td>
-												<input type="submit" id="td-invited" class="btn btn-success" value="发布培训" onclick="addTrain()">
+												<input type="submit" class="btn btn-success" value="发布培训" onclick="addTrain()">
 												<input type="submit" class="btn btn-success" value="取消" onclick="returnTrainsByAdd()">
 											</td>
 										</tr>

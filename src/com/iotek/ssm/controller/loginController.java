@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.iotek.ssm.entity.BonusForfeit;
 import com.iotek.ssm.entity.ClockRecord;
 import com.iotek.ssm.entity.Department;
 import com.iotek.ssm.entity.Employment;
@@ -22,6 +23,7 @@ import com.iotek.ssm.entity.Position;
 import com.iotek.ssm.entity.Train;
 import com.iotek.ssm.entity.User;
 import com.iotek.ssm.entity.Wages;
+import com.iotek.ssm.service.BonusForfeitService;
 import com.iotek.ssm.service.ClockRecordService;
 import com.iotek.ssm.service.DepartmentService;
 import com.iotek.ssm.service.EmploymentService;
@@ -51,6 +53,8 @@ public class loginController {
 	private ClockRecordService clockRecordService;
 	@Autowired
 	private WagesService wagesService;
+	@Autowired
+	private BonusForfeitService bfService;
 	@RequestMapping("saveInterview")
 	public String saveInterview(Model model, Info info, Integer dId, Integer pId, HttpSession session) {
 		String realName = info.getRealName();
@@ -238,14 +242,20 @@ public class loginController {
 				session.setAttribute("month", month);
 				session.setAttribute("yearw", year);
 				session.setAttribute("monthw", month);
+				session.setAttribute("yearb", year);
+				session.setAttribute("monthb", month);
+				session.setAttribute("yearc", year);
+				session.setAttribute("monthc", month);
 				if(type == 0) {
 					List<Info> infos = infoService.queryInfosByServingStaff();
 					session.setAttribute("infos", infos);
 					session.setAttribute("emp", 1);
-					List<Wages> wages = wagesService.findWagesByYearMonth(year, month);
+					List<Wages> wages = wagesService.findWagesByYearMonth(year, month-1);
 					session.setAttribute("wages", wages);
 					List<Interview> interviews = interviewService.queryDeliverInterviews();
 					session.setAttribute("interviews", interviews);
+					List<BonusForfeit> bFsByMonth = bfService.queryBFsByMonth(year, month);
+					session.setAttribute("bFsByMonth", bFsByMonth);
 					return "jump/adminJump";
 				}else if(type == 1 || type == 4) {
 					Interview interview = interviewService.queryInterviewByuId(uId);
@@ -258,7 +268,7 @@ public class loginController {
 					session.setAttribute("info", infoService.queryInfoByuId(uId));//info
 					return "jump/userJump";
 				}else if(type == 2) {
-					Wages wages = wagesService.findWagesByuIdYearMonth(uId, year, month);
+					Wages wages = wagesService.findWagesByuIdYearMonth(uId, year, month-1);
 					session.setAttribute("wages", wages);
 					Info info = infoService.queryInfoByuId(uId);
 					session.setAttribute("info", info);

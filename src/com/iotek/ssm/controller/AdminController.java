@@ -1,6 +1,7 @@
 package com.iotek.ssm.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.iotek.ssm.entity.BonusForfeit;
+import com.iotek.ssm.entity.ClockRecord;
 import com.iotek.ssm.entity.Department;
 import com.iotek.ssm.entity.Employment;
 import com.iotek.ssm.entity.Info;
@@ -24,6 +27,8 @@ import com.iotek.ssm.entity.Position;
 import com.iotek.ssm.entity.Train;
 import com.iotek.ssm.entity.User;
 import com.iotek.ssm.entity.Wages;
+import com.iotek.ssm.service.BonusForfeitService;
+import com.iotek.ssm.service.ClockRecordService;
 import com.iotek.ssm.service.DepartmentService;
 import com.iotek.ssm.service.EmploymentService;
 import com.iotek.ssm.service.InfoService;
@@ -54,10 +59,76 @@ public class AdminController {
 	private PositionService positionService;
 	@Autowired
 	private WagesService wagesService;
+	@Autowired
+	private ClockRecordService clockRecordService;
+	@Autowired
+	private BonusForfeitService bfService;
 	@InitBinder
 	public void InitBinder(ServletRequestDataBinder binder) {
 		binder.registerCustomEditor(Date.class, 
 				new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
+	}
+	@RequestMapping("clockEmp")
+	public String clockEmp(HttpSession session,Model model,Integer uId,Integer yearc,Integer monthc) {
+		model.addAttribute("toClockEmp", "toClockEmp");
+		if(yearc == null) {
+			session.setAttribute("clockUser", new User(uId, null, null, 2));
+			Calendar now = Calendar.getInstance();
+			yearc = now.get(Calendar.YEAR);
+			monthc = now.get(Calendar.MONTH);
+			monthc++;
+		}else {
+			User user = (User) session.getAttribute("clockUser");
+			uId = user.getuId();
+		}
+		List<ClockRecord> clockRecords = clockRecordService.getClockRecordsForMonth(uId, yearc, monthc);
+		int absenteeismDays = clockRecordService.getAbsenteeismDays(uId, yearc, monthc);
+		session.setAttribute("absenteeismDays", absenteeismDays);
+		session.setAttribute("clockRecords", clockRecords);
+		session.setAttribute("yearc", yearc);
+		session.setAttribute("monthc", monthc);
+		return "admin/index";
+	}
+	@RequestMapping("findBonus")
+	public String findBonus(HttpSession session,Model model,Integer yearb,Integer monthb) {
+		model.addAttribute("toBonus", "toBonus");
+		List<BonusForfeit> bFsByMonth = bfService.queryBFsByMonth(yearb, monthb);
+		session.setAttribute("bFsByMonth", bFsByMonth);
+		session.setAttribute("yearb", yearb);
+		session.setAttribute("monthb", monthb);
+		return "admin/index";
+	}
+	@RequestMapping("bonus")
+	public String bonus(HttpSession session,Model model,Integer bonusuId,String bonusReason,Integer bonusMoney) {
+		model.addAttribute("toBonus", "toBonus");
+		Calendar now = Calendar.getInstance();
+		int yearb = now.get(Calendar.YEAR);
+		int monthb = now.get(Calendar.MONTH);
+		int dayb = now.get(Calendar.DAY_OF_MONTH);
+		bfService.addBF(new BonusForfeit(0, bonusuId, yearb, monthb, dayb, 1, bonusMoney, bonusReason));
+		//修改工资
+		Wages wages = wagesService.findWagesByuIdYearMonth(bonusuId, yearb, monthb);
+		if(wages == null) {
+			wages = new Wages(0, bonusuId, 0, 0, 0, 0, 0, 0, 0, yearb, monthb);
+			wagesService.addWages(wages);
+		}
+		wages.setBonus(bonusMoney);
+		double total = wages.getBasicwages()+wages.getBonus()+wages.getForfiet()+wages.getOvertimewages()+wages.getPerformance();
+		if(total > 0) {
+			wages.setSocial(wages.getBasicwages()*(-0.1));
+		}
+		wages.setRealwages(total+wages.getSocial());
+		wagesService.updateWages(wages);
+		List<Wages> wageslist = wagesService.findWagesByYearMonth(yearb, monthb);
+		monthb++;
+		session.setAttribute("wages", wageslist);
+		session.setAttribute("yearb", yearb);
+		session.setAttribute("monthb", monthb);
+		session.setAttribute("year", yearb);
+		session.setAttribute("month", monthb);
+		List<BonusForfeit> bFsByMonth = bfService.queryBFsByMonth(yearb, monthb);
+		session.setAttribute("bFsByMonth", bFsByMonth);
+		return "admin/index";
 	}
 	@RequestMapping("findEmpMsg")
 	public String findEmpMsg(HttpSession session,Model model,Integer uId) {
@@ -79,10 +150,32 @@ public class AdminController {
 		}
 		return "admin/index";
 	}
+	@RequestMapping(value="transfer",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String transfer(Integer uId){
+		Info info = infoService.queryInfoByuId(uId);
+		String jsonString = JSON.toJSONString(info);
+		return jsonString;
+	}
+	@RequestMapping(value="doTransfer",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String doTransfer(Integer uId,Integer dId,Integer pId) {
+		Info info = infoService.queryInfoByuId(uId);
+		info.setDept(new Department(dId, null, null, null));
+		info.setPosition(new Position(pId, null, dId, null, null));
+		boolean updateInfo = infoService.updateInfo(info);
+		if(updateInfo) {
+			return "调动成功";
+		}else {
+			return "调动失败";
+		}
+	}
 	@RequestMapping("findWages")
 	public String findWages(HttpSession session,Model model,Integer year,Integer month) {
 		model.addAttribute("toWages", "toWages");
+		month--;
 		List<Wages> wages = wagesService.findWagesByYearMonth(year, month);
+		month++;
 		session.setAttribute("wages", wages);
 		session.setAttribute("year", year);
 		session.setAttribute("month", month);

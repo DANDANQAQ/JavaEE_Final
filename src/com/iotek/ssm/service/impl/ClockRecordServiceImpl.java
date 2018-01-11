@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.iotek.ssm.dao.ClockRecordDao;
+import com.iotek.ssm.entity.BonusForfeit;
 import com.iotek.ssm.entity.ClockRecord;
 import com.iotek.ssm.entity.Wages;
+import com.iotek.ssm.service.BonusForfeitService;
 import com.iotek.ssm.service.ClockRecordService;
 import com.iotek.ssm.service.WagesService;
 
@@ -21,6 +23,8 @@ public class ClockRecordServiceImpl implements ClockRecordService {
 	private ClockRecordDao clockRecordDao;
 	@Autowired
 	private WagesService wagesService;
+	@Autowired
+	private BonusForfeitService bfService;
 	@Override
 	public boolean canClockin(int uId) {
 		Calendar now = Calendar.getInstance();
@@ -134,10 +138,14 @@ public class ClockRecordServiceImpl implements ClockRecordService {
 		wages.setBasicwages(wages.getBasicwages()+400);
 		int lateEarly = late + early;
 		double forfiet = 0;
-		if(lateEarly > 2) {  //TODO 添加奖惩信息
+		if(lateEarly > 2) {
 			forfiet = -400;
 		}else {
 			forfiet = lateEarly * (-100);
+		}
+		if(lateEarly > 0) {	//添加惩罚记录
+			String msg = "迟到早退";
+			bfService.addBF(new BonusForfeit(0, uId, year, month, day, 0, forfiet, msg));
 		}
 		wages.setForfiet(wages.getForfiet()+forfiet);
 		double total = wages.getBasicwages()+wages.getBonus()+wages.getForfiet()+wages.getOvertimewages()+wages.getPerformance();

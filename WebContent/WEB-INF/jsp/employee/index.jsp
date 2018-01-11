@@ -355,7 +355,7 @@
 								<option value="11">11</option>
 								<option value="12">12</option>
 							</select>月
-							<input type="submit" id="td-invited" class="btn btn-success" value="查询">
+							<input type="submit" class="btn btn-success" value="查询">
 						</form>
 						<table id="table-5" align="center">
 							<tr>
@@ -411,7 +411,7 @@
 											<option value="11">11</option>
 											<option value="12">12</option>
 										</select>月
-										<input type="submit" id="td-invited" class="btn btn-success" value="查询">
+										<input type="submit" class="btn btn-success" value="查询">
 									</form>
 								</td>
 								<td>

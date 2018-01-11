@@ -14,6 +14,7 @@ import com.iotek.ssm.entity.ClockRecord;
 import com.iotek.ssm.entity.Info;
 import com.iotek.ssm.entity.User;
 import com.iotek.ssm.entity.Wages;
+import com.iotek.ssm.service.BonusForfeitService;
 import com.iotek.ssm.service.ClockRecordService;
 import com.iotek.ssm.service.DepartmentService;
 import com.iotek.ssm.service.EmploymentService;
@@ -42,6 +43,8 @@ public class EmployeeController {
 	private ClockRecordService clockRecordService;
 	@Autowired
 	private WagesService wagesService;
+	@Autowired
+	private BonusForfeitService bfService;
 	@RequestMapping("findWages")
 	public String findWages(HttpSession session,Model model,Integer year,Integer month) {
 		model.addAttribute("toWages", "toWages");

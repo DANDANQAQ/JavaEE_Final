@@ -39,12 +39,12 @@ public class WagesServiceImpl implements WagesService {
 
 	@Override
 	public Wages findWagesByuIdYearMonth(int uId, int year, int month) {
-		return wagesDao.queryWagesByuIdYearMonth(uId, year, month-1);
+		return wagesDao.queryWagesByuIdYearMonth(uId, year, month);
 	}
 
 	@Override
 	public List<Wages> findWagesByYearMonth(int year, int month) {
-		return wagesDao.queryWagesByYearMonth(year, month-1);
+		return wagesDao.queryWagesByYearMonth(year, month);
 	}
 
 }
