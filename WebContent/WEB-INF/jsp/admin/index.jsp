@@ -69,6 +69,9 @@
 		}else if(${not empty requestScope.toBonus}){
 			$(".allpage").hide();
 			$("#bfManage").show();
+		}else if(${not empty requestScope.toObjection}){
+			$(".allpage").hide();
+			$("#objection").show();
 		}else if(${not empty requestScope.toClockEmp}){
 			$(".allpage").hide();
 			$("#clockEmp").show();
@@ -121,6 +124,11 @@
 		$("#wages").fadeIn();
 		return false;
 	}
+	function objection(){
+		$(".allpage").hide();
+		$("#objection").fadeIn();
+		return false;
+	}
 	function resumeManage(){
 		$(".allpage").hide();
 		$("#resumeManage").fadeIn();
@@ -163,6 +171,31 @@
 		$("input[name=editPositionpId]").val(pId);
 		$("#editPositionName").fadeIn();
 		return false;
+	}
+	function dismissObjection(obj){
+		var wId = $(obj).attr("name");
+		$.ajax({
+			url:"${pageContext.request.contextPath}/admin/wagesMsgByObjection",
+			type:"post",
+			data:{wId:wId},
+			dataType:"JSON",
+			success:function(data){
+				$("#obj-uId").text(data.uid);
+				$("#obj-realwages").text(data.realwages);
+				$("#obj-basicwages").text(data.basicwages);
+				$("#obj-performance").text(data.performance);
+				$("#obj-overtimewages").text(data.overtimewages);
+				$("#obj-bonus").text(data.bonus);
+				$("#obj-forfiet").text(data.forfiet);
+				$("#obj-social").text(data.social);
+				$("#obj-month").text(data.year+"-"+data.month+1);
+				$("#obj-a").attr("href","${pageContext.request.contextPath}/admin/dismissObjection?wId="+data.wid);
+				$("#wagesMsgByObjecion").fadeIn();
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
 	}
 	function findInfoInPosition(obj){
 		var uId = $(obj).attr("name");
@@ -547,7 +580,7 @@
             <li><a href="#" onclick="return employeeManage()">员工管理</a></li>
             <li><a href="#" onclick="return bfManage()">奖惩管理</a></li>
             <li><a href="#" onclick="return wages()">薪资管理</a></li>
-            <li><a href="#">工资异议</a></li>
+            <li><a href="#" onclick="return objection()">工资异议</a></li>
             <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
           </ul>
         </div>
@@ -566,6 +599,53 @@
 						<h1 id="h1"></h1>
 						<h1 id="h2"></h1>
 						<h1 id="txt"></h1>
+					</div>
+				
+					
+					<div id="wagesMsgByObjecion" class="allpage">
+						<table id="table-2" align="center">
+							<tr>
+								<th>异议员工编号</th>
+								<th>总工资</th>
+								<th>基本工资</th>
+								<th>绩效工资</th>	
+								<th>加班工资</th>	
+								<th>奖励工资</th>	
+								<th>惩罚工资</th>	
+								<th>社保工资</th>	
+								<th>异议月份</th>	
+								<th>操作</th>	
+							</tr>
+							<tr>
+								<td id="obj-uId"></td>
+								<td id="obj-realwages"></td>
+								<td id="obj-basicwages"></td>
+								<td id="obj-performance"></td>
+								<td id="obj-overtimewages"></td>
+								<td id="obj-bonus"></td>
+								<td id="obj-forfiet"></td>
+								<td id="obj-social"></td>
+								<td id="obj-month"></td>
+								<td><a href="#" id="obj-a">驳回</a></td>
+							</tr>
+						</table>
+					</div>
+					<!-- 工资异议 -->
+					<div id="objection" class="allpage">
+						<table id="table-2" align="center">
+							<tr>
+								<th>异议员工编号</th>
+								<th>异议缘由</th>
+								<th>详情</th>	
+							</tr>
+							<c:forEach items="${sessionScope.objections}" var="o">
+								<tr>
+									<td>${o.uId}</td>
+									<td>${o.msg}</td>
+									<td><a href="#" name="${o.wId}" onclick="return dismissObjection(this)">详情</a></td>
+								</tr>
+							</c:forEach>
+						</table>
 					</div>
 					
 					<!-- 奖惩管理 -->

@@ -15,6 +15,7 @@ import com.iotek.ssm.entity.ClockRecord;
 import com.iotek.ssm.entity.Info;
 import com.iotek.ssm.entity.User;
 import com.iotek.ssm.entity.Wages;
+import com.iotek.ssm.entity.WagesRecord;
 import com.iotek.ssm.service.BonusForfeitService;
 import com.iotek.ssm.service.ClockRecordService;
 import com.iotek.ssm.service.DepartmentService;
@@ -23,6 +24,7 @@ import com.iotek.ssm.service.InfoService;
 import com.iotek.ssm.service.InterviewService;
 import com.iotek.ssm.service.PositionService;
 import com.iotek.ssm.service.TrainService;
+import com.iotek.ssm.service.WagesRecordService;
 import com.iotek.ssm.service.WagesService;
 
 @RequestMapping("/employee")
@@ -46,6 +48,8 @@ public class EmployeeController {
 	private WagesService wagesService;
 	@Autowired
 	private BonusForfeitService bfService;
+	@Autowired
+	private WagesRecordService wrService;
 	@RequestMapping("findBonus")
 	public String findBonus(HttpSession session,Model model,Integer yearb,Integer monthb) {
 		model.addAttribute("toBonus", "toBonus");
@@ -95,6 +99,27 @@ public class EmployeeController {
 		return "employee/index";
 	}
 	
+	@RequestMapping(value="objectionAjax",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String objectionAjax(HttpSession session,Integer wId,String msg) {
+		User user = (User) session.getAttribute("nowUser");
+		int uId = user.getuId();
+		WagesRecord wr = wrService.queryWagesRecordBywId(wId);
+		if(wr == null) {
+			wr = new WagesRecord(0, uId, wId, 0, 0, null, 0);
+			wrService.addWagesRecord(wr);
+		}
+		if(wr.getDismissObjection() == 1) {
+			return "提交失败，该月的异议已被驳回过";
+		}
+		if(wr.getObjection() == 1) {
+			return "提交失败，该月已提交过异议";
+		}
+		wr.setObjection(1);
+		wr.setMsg(msg);
+		wrService.updateWagesRecord(wr);
+		return "提交成功";
+	}
 	@RequestMapping(value="clockin",produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String clockin(HttpSession session) {

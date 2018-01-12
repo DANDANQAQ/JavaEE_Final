@@ -14,4 +14,5 @@ public interface WagesDao {
 		(@Param("uId")int uId,@Param("year")int year,@Param("month")int month);
 	public List<Wages> queryWagesByYearMonth
 		(@Param("year")int year,@Param("month")int month);
+	public Wages findWagesBywId(int wId);
 }

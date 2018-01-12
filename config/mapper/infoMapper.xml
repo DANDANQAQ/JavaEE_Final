@@ -54,6 +54,14 @@
 		WHERE
 			i.d_id=d.d_id AND i.p_id=p.p_id AND type=2
 	</select>	
+	<select id="queryInfosByServingStaffAndDept" parameterType="int" resultMap="Info_dept_posi">
+		SELECT 
+			*
+		FROM 
+			info i,departments d,positions p
+		WHERE
+			i.d_id=d.d_id AND i.p_id=p.p_id AND type=2 AND i.d_id=#{dId}
+	</select>	
 	<select id="queryInfosByNotServingStaff" resultMap="Info_dept_posi">
 		SELECT 
 			*

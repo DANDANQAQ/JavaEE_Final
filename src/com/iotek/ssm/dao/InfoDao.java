@@ -12,4 +12,5 @@ public interface InfoDao {
 	public Info queryInfoByuId(int uId);
 	public List<Info> queryInfosByServingStaff();
 	public List<Info> queryInfosByNotServingStaff();
+	public List<Info> queryInfosByServingStaffAndDept(int dId);
 }

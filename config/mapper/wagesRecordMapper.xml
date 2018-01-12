@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iotek.ssm.dao.WagesRecordDao">
+	<insert id="addWagesRecord" parameterType="WagesRecord" keyProperty="wrId">
+		INSERT INTO
+			wagesrecords(u_id,w_id,pay,objection,msg,dismissObjection)
+		VALUES
+			(#{uId},#{wId},#{pay},#{objection},#{msg},#{dismissObjection})
+	</insert>
+	
+	<update id="updateWagesRecord" parameterType="WagesRecord">
+		UPDATE
+			wagesrecords
+		SET
+			u_id=#{uId},
+			w_id=#{wId},
+			pay=#{pay},
+			objection=#{objection},
+			msg=#{msg},
+			dismissObjection=#{dismissObjection}
+		WHERE
+			wr_id=#{wrId}
+	</update>
+	
+	<select id="queryObjectionWagesRecords" resultType="WagesRecord">
+		SELECT 
+			*
+		FROM 
+			wagesrecords
+		WHERE
+			dismissObjection=0 AND objection=1
+	</select>	
+	
+	<select id="queryWagesRecordBywId" parameterType="int" resultType="WagesRecord">
+		SELECT 
+			*
+		FROM 
+			wagesrecords
+		WHERE
+			w_id=#{wId}
+	</select>	
+	
+	<select id="queryWagesRecordBywrId" parameterType="int" resultType="WagesRecord">
+		SELECT 
+			*
+		FROM 
+			wagesrecords
+		WHERE
+			wr_id=#{wrId}
+	</select>	
+</mapper>

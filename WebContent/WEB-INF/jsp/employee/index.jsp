@@ -141,6 +141,31 @@
 			}
 		})
 	}
+	function objection(obj){
+		var wId = $(obj).attr("name");
+		$("input[name=wId]").val(wId);
+		$("#objection").fadeIn();
+		return false;
+	}
+	function objectionAjax(){
+		var wId = $("input[name=wId]").val();
+		var msg = $("input[name=objectionMsg]").val();
+		$.ajax({
+			url:"${pageContext.request.contextPath}/employee/objectionAjax",
+			type:"post",
+			data:{wId:wId,msg:msg},
+			dataType:"text",
+			success:function(data){
+				alert(data);
+				$("#objection").hide();
+				$("input[name=wId]").val('');
+				$("input[name=objectionMsg]").val('');
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})	
+	}
 	function clockin(){
 		var clockin = $("button[name=clockin]");
 		var clockout = $("button[name=clockout]");
@@ -393,26 +418,41 @@
 					
 					<!-- 我的薪资 -->
 					<div id="wages" class="allpage">
-						<form action="${pageContext.request.contextPath}/employee/findWages" method="post">
-							<select name="year" id="yearw">
-								<option value="2018">2018</option>
-							</select>年
-							<select name="month" id="monthw">
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-								<option value="6">6</option>
-								<option value="7">7</option>
-								<option value="8">8</option>
-								<option value="9">9</option>
-								<option value="10">10</option>
-								<option value="11">11</option>
-								<option value="12">12</option>
-							</select>月
-							<input type="submit" class="btn btn-success" value="查询">
-						</form>
+						<table align="center">
+							<tr>
+								<td>
+									<form action="${pageContext.request.contextPath}/employee/findWages" method="post">
+										<select name="year" id="yearw">
+											<option value="2018">2018</option>
+										</select>年
+										<select name="month" id="monthw">
+											<option value="1">1</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="11">11</option>
+											<option value="12">12</option>
+										</select>月
+										<input type="submit" class="btn btn-success" value="查询">
+									</form>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div id="objection" class="allpage">
+										<input type="hidden" name="wId">
+										<input type="text" name="objectionMsg"  placeholder="输入异议理由" required="required">
+										<input type="submit" class="btn btn-success" value="提交" onclick="objectionAjax()">
+									</div>
+								</td>
+							</tr>
+						</table>
 						<table id="table-5" align="center">
 							<tr>
 								<th>总工资</th>
@@ -438,7 +478,7 @@
 									<td>${sessionScope.wages.bonus}</td>
 									<td>${sessionScope.wages.forfiet}</td>
 									<td>${sessionScope.wages.social}</td>
-									<td><a href="#">异议</a></td>
+									<td><a href="#" name="${sessionScope.wages.wId}" onclick="return objection(this)">异议</a></td>
 								</tr>
 							</c:if>
 						</table>

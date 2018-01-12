@@ -47,4 +47,9 @@ public class WagesServiceImpl implements WagesService {
 		return wagesDao.queryWagesByYearMonth(year, month);
 	}
 
+	@Override
+	public Wages findWagesBywId(int wId) {
+		return wagesDao.findWagesBywId(wId);
+	}
+
 }

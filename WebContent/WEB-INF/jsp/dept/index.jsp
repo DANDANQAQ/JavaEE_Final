@@ -62,10 +62,48 @@
 		$("#trainPage").fadeIn();
 		return false;
 	}
+	function performance(){
+		$(".allpage").hide();
+		$("#performance").fadeIn();
+		return false;
+	}
 	function interviewNotice(){
 		$(".allpage").hide();
 		$("#interviewNotice").fadeIn();
 		return false;
+	}
+	function addPerformance(obj){
+		var uId = $(obj).attr("name");
+		$("input[name=performanceuId]").val(uId);
+		$("#addPerformance").fadeIn();
+		return false;
+	}
+	function addPerformanceAjax(){
+		var uId = $("input[name=performanceuId]").val();
+		var performance = $("input[name=performance]").val();
+		if(performance < 0){
+			alert('金额不能为负');
+			return;
+		}
+		$.ajax({
+			url:"${pageContext.request.contextPath}/dept/addPerformance",
+			type:"post",
+			data:{uId:uId,performance:performance},
+			dataType:"text",
+			success:function(data){
+				if(data == 1){
+					alert('操作成功');
+				}else{
+					alert('操作失败');
+				}
+				$("#addPerformance").hide();
+				$("input[name=performanceuId]").val('');
+				$("input[name=performance]").val('');
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
 	}
 	function interview(obj){
 		var uId = $(obj).attr("name");
@@ -120,7 +158,7 @@
 	      <ul class="nav navbar-nav navbar-right">
 	        <li><a href="#" onclick="return interviewNotice()">面试通知</a></li>
 	        <li><a href="#" onclick="return trainPage()">培训通知</a></li>
-	        <li><a href="#">效绩管理</a></li>
+	        <li><a href="#" onclick="return performance()">绩效管理</a></li>
 	        <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
 	      </ul>
 	    </div>
@@ -138,9 +176,43 @@
 						<h1>这里是${sessionScope.dept.dName}的管理页面</h1>
 					</div>
 					
+					<!-- 增加绩效 -->
+					<div id="addPerformance" class="allpage">
+						<input type="hidden" name="performanceuId">
+						<input type="number" name="performance" placeholder="输入该员工的绩效奖金" required="required">
+						<input type="submit"class="btn btn-success" value="确认" onclick="addPerformanceAjax()">
+					</div>
+					
+					<!-- 效绩管理 -->
+					<div id="performance" class="allpage">
+						<table align="center" id="table-6">
+							<tr>
+								<th>员工ID</th>
+								<th>姓名</th>
+								<th>职位</th>
+								<th>操作</th>
+							</tr>
+							<c:if test="${empty sessionScope.infos}">
+								<tr>
+									<td colspan="4" style="text-align:center;">部门暂时无员工</td>
+								</tr>
+							</c:if>
+							<c:if test="${not empty sessionScope.infos}">
+								<c:forEach items="${sessionScope.infos}" var="i">
+									<tr>
+										<td>${i.uId}</td>
+										<td>${i.realName}</td>
+										<td>${i.position.pName}</td>
+										<td><a href="#" name="${i.uId}" onclick="return addPerformance(this)">新增当月绩效</a></td>
+									</tr>
+								</c:forEach>
+							</c:if>
+						</table>
+					</div>
+					
 					<!-- 面试通知 -->
 					<div id="interviewNotice" class="allpage">
-						<table align="center" border="soild 1px" cellpadding="10px" cellspacing="0">
+						<table align="center" id="table-6">
 							<tr>
 								<th>序号</th>
 								<th>应聘者ID</th>
@@ -185,7 +257,7 @@
 					<!-- 简历详情 -->
 					<div id="resumeDetails" class="allpage">
 						<form action="${pageContext.request.contextPath}/user/ifenroll">
-							<table align="center" border="soild 1px" cellpadding="10px" cellspacing="0">
+							<table align="center" id="table-6">
 								<tr>
 									<th colspan="4" style="text-align:center;">简历详情</th>
 								</tr>

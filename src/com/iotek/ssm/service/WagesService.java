@@ -8,5 +8,6 @@ public interface WagesService {
 	public boolean addWages(Wages wages);
 	public boolean updateWages(Wages wages);
 	public Wages findWagesByuIdYearMonth(int uId,int year,int month);
+	public Wages findWagesBywId(int wId);
 	public List<Wages> findWagesByYearMonth(int year,int month);
 }

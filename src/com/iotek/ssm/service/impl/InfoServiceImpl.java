@@ -61,4 +61,9 @@ public class InfoServiceImpl implements InfoService {
 		return infoDao.queryInfosByNotServingStaff();
 	}
 
+	@Override
+	public List<Info> queryInfosByServingStaffAndDept(int dId) {
+		return infoDao.queryInfosByServingStaffAndDept(dId);
+	}
+
 }

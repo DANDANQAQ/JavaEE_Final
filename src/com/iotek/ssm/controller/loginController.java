@@ -23,6 +23,7 @@ import com.iotek.ssm.entity.Position;
 import com.iotek.ssm.entity.Train;
 import com.iotek.ssm.entity.User;
 import com.iotek.ssm.entity.Wages;
+import com.iotek.ssm.entity.WagesRecord;
 import com.iotek.ssm.service.BonusForfeitService;
 import com.iotek.ssm.service.ClockRecordService;
 import com.iotek.ssm.service.DepartmentService;
@@ -31,6 +32,7 @@ import com.iotek.ssm.service.InfoService;
 import com.iotek.ssm.service.InterviewService;
 import com.iotek.ssm.service.TrainService;
 import com.iotek.ssm.service.UserService;
+import com.iotek.ssm.service.WagesRecordService;
 import com.iotek.ssm.service.WagesService;
 import com.iotek.ssm.util.MyUtil;
 
@@ -55,6 +57,8 @@ public class loginController {
 	private WagesService wagesService;
 	@Autowired
 	private BonusForfeitService bfService;
+	@Autowired
+	private WagesRecordService wrService;
 	@RequestMapping("saveInterview")
 	public String saveInterview(Model model, Info info, Integer dId, Integer pId, HttpSession session) {
 		String realName = info.getRealName();
@@ -109,6 +113,9 @@ public class loginController {
 			User enrollUser = userService.queryUserById(invitedUserId);
 			enrollUser.setType(2);
 			userService.updateUser(enrollUser);
+			Department department = (Department) session.getAttribute("dept");
+			List<Info> infos = infoService.queryInfosByServingStaffAndDept(department.getdId());
+			session.setAttribute("infos", infos);
 		}
 		interview.setInvited(0);
 		interview.setInvitedTime(null);
@@ -247,6 +254,8 @@ public class loginController {
 				session.setAttribute("yearc", year);
 				session.setAttribute("monthc", month);
 				if(type == 0) {
+					List<WagesRecord> objections = wrService.queryObjectionWagesRecords();
+					session.setAttribute("objections", objections);
 					List<Info> infos = infoService.queryInfosByServingStaff();
 					session.setAttribute("infos", infos);
 					session.setAttribute("emp", 1);
@@ -287,6 +296,8 @@ public class loginController {
 					Department dept = infoService.queryInfoByuId(uId).getDept();
 					session.setAttribute("dept", dept);
 					int dId = dept.getdId();
+					List<Info> infos = infoService.queryInfosByServingStaffAndDept(dId);
+					session.setAttribute("infos", infos);
 					List<Interview> interviewsByDept = interviewService.queryDeliverInterviewsByDept(dId);
 					if(interviewsByDept!=null) {
 						session.setAttribute("interviewsByDept", interviewsByDept);//interviewsByDept

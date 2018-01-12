@@ -46,4 +46,13 @@
 			year=#{year} AND month=#{month}
 	</select>	
 	
+	<select id="findWagesBywId" parameterType="int" resultType="Wages">
+		SELECT 
+			*
+		FROM 
+			wages
+		WHERE
+			w_id=#{wId}
+	</select>	
+	
 </mapper>

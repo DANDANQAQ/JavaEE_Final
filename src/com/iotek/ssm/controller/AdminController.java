@@ -27,6 +27,7 @@ import com.iotek.ssm.entity.Position;
 import com.iotek.ssm.entity.Train;
 import com.iotek.ssm.entity.User;
 import com.iotek.ssm.entity.Wages;
+import com.iotek.ssm.entity.WagesRecord;
 import com.iotek.ssm.service.BonusForfeitService;
 import com.iotek.ssm.service.ClockRecordService;
 import com.iotek.ssm.service.DepartmentService;
@@ -36,6 +37,7 @@ import com.iotek.ssm.service.InterviewService;
 import com.iotek.ssm.service.PositionService;
 import com.iotek.ssm.service.TrainService;
 import com.iotek.ssm.service.UserService;
+import com.iotek.ssm.service.WagesRecordService;
 import com.iotek.ssm.service.WagesService;
 import com.iotek.ssm.util.ChineseToEnglish2;
 import com.iotek.ssm.util.MyUtil;
@@ -63,6 +65,8 @@ public class AdminController {
 	private ClockRecordService clockRecordService;
 	@Autowired
 	private BonusForfeitService bfService;
+	@Autowired
+	private WagesRecordService wrService;
 	@InitBinder
 	public void InitBinder(ServletRequestDataBinder binder) {
 		binder.registerCustomEditor(Date.class, 
@@ -148,6 +152,23 @@ public class AdminController {
 			session.setAttribute("infos", infos);
 			session.setAttribute("emp", 2);
 		}
+		return "admin/index";
+	}
+	@RequestMapping(value="wagesMsgByObjection",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String wagesMsgByObjection(Integer wId){
+		Wages wages = wagesService.findWagesBywId(wId);
+		String jsonString = JSON.toJSONString(wages);
+		return jsonString;
+	}
+	@RequestMapping("dismissObjection")
+	public String dismissObjection(Model model,Integer wId,HttpSession session){
+		model.addAttribute("toObjection", "toObjection");
+		WagesRecord wagesRecord = wrService.queryWagesRecordBywId(wId);
+		wagesRecord.setDismissObjection(1);
+		wrService.updateWagesRecord(wagesRecord);
+		List<WagesRecord> objections = wrService.queryObjectionWagesRecords();
+		session.setAttribute("objections", objections);
 		return "admin/index";
 	}
 	@RequestMapping(value="transfer",produces = "text/html;charset=UTF-8")

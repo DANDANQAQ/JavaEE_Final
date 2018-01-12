@@ -1,7 +1,11 @@
 package com.iotek.ssm.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class Wages {
+	@JSONField(name="wid")
 	private int wId;
+	@JSONField(name="uid")
 	private int uId;
 	private double realwages;
 	private double basicwages;
@@ -30,15 +34,19 @@ public class Wages {
 		this.year = year;
 		this.month = month;
 	}
+	@JSONField(name="wid")
 	public int getwId() {
 		return wId;
 	}
+	@JSONField(name="wid")
 	public void setwId(int wId) {
 		this.wId = wId;
 	}
+	@JSONField(name="uid")
 	public int getuId() {
 		return uId;
 	}
+	@JSONField(name="uid")
 	public void setuId(int uId) {
 		this.uId = uId;
 	}
