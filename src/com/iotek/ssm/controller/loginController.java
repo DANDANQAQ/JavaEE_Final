@@ -256,7 +256,7 @@ public class loginController {
 					session.setAttribute("interviews", interviews);
 					List<BonusForfeit> bFsByMonth = bfService.queryBFsByMonth(year, month);
 					session.setAttribute("bFsByMonth", bFsByMonth);
-					return "jump/adminJump";
+					return "admin/index";
 				}else if(type == 1 || type == 4) {
 					Interview interview = interviewService.queryInterviewByuId(uId);
 					int invited = interview.getInvited();
@@ -266,8 +266,10 @@ public class loginController {
 						session.setAttribute("interviewFeedback", null);
 					}
 					session.setAttribute("info", infoService.queryInfoByuId(uId));//info
-					return "jump/userJump";
+					return "user/index";
 				}else if(type == 2) {
+					List<BonusForfeit> bFsByMonth = bfService.queryBFsByUser(uId, year, month);
+					session.setAttribute("bFsByMonth", bFsByMonth);
 					Wages wages = wagesService.findWagesByuIdYearMonth(uId, year, month-1);
 					session.setAttribute("wages", wages);
 					Info info = infoService.queryInfoByuId(uId);
@@ -280,7 +282,7 @@ public class loginController {
 					int absenteeismDays = clockRecordService.getAbsenteeismDays(uId, year, month);
 					session.setAttribute("absenteeismDays", absenteeismDays);
 					session.setAttribute("clockRecords", clockRecords);
-					return "jump/employeeJump";
+					return "employee/index";
 				}else if(type == 3) {
 					Department dept = infoService.queryInfoByuId(uId).getDept();
 					session.setAttribute("dept", dept);
@@ -303,22 +305,6 @@ public class loginController {
 				return "loginRegister";
 			}
 		}
-	}
-	@RequestMapping("/toAdmin")
-	public String toAdmin() {
-		return "admin/index";
-	}
-	@RequestMapping("/todept")
-	public String todept() {
-		return "dept/index";
-	}
-	@RequestMapping("/toEmployee")
-	public String toEmployee() {
-		return "employee/index";
-	}
-	@RequestMapping("/toUser")
-	public String toUser() {
-		return "user/index";
 	}
 	@RequestMapping("/toLogin")
 	public String toLogin() {

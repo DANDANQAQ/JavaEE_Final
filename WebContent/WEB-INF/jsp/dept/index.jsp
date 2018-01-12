@@ -120,7 +120,7 @@
 	      <ul class="nav navbar-nav navbar-right">
 	        <li><a href="#" onclick="return interviewNotice()">面试通知</a></li>
 	        <li><a href="#" onclick="return trainPage()">培训通知</a></li>
-	        <li><a href="#" onclick="return changePSWpage()">效绩管理</a></li>
+	        <li><a href="#">效绩管理</a></li>
 	        <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
 	      </ul>
 	    </div>

@@ -17,6 +17,9 @@
 	1.11 09:00	管理员查看在职员工详细信息
 		 16:00	人事调动   查看员工考勤   奖惩管理
 	
+	1.12 09:00	员工查看奖惩
+	
+	
 	interview
 		it_id,u_id,i_id,deliver,deliverTime,readed,invited,invitedTime,interview,enroll
 	

@@ -43,6 +43,8 @@
 		$("#month").find("option[value='"+${sessionScope.month}+"']").attr("selected",true);
 		$("#yearw").find("option[value='"+${sessionScope.yearw}+"']").attr("selected",true);
 		$("#monthw").find("option[value='"+${sessionScope.monthw}+"']").attr("selected",true);
+		$("#yearb").find("option[value='"+${sessionScope.yearb}+"']").attr("selected",true);
+		$("#monthb").find("option[value='"+${sessionScope.monthb}+"']").attr("selected",true);
 		if(${sessionScope.canClockin==false}){
 			$("button[name=clockin]").attr("disabled",true);
 		}else{
@@ -60,6 +62,9 @@
 		}else if(${not empty requestScope.toWages}){
 			$(".allpage").hide();
 			$("#wages").show();
+		}else if(${not empty requestScope.toBonus}){
+			$(".allpage").hide();
+			$("#bfManage").show();
 		}else{
 			$(".allpage").hide();
 			$("#index").show();
@@ -83,6 +88,11 @@
 	function wages(){
 		$(".allpage").hide();
 		$("#wages").fadeIn();
+		return false;
+	}
+	function bfManage(){
+		$(".allpage").hide();
+		$("#bfManage").fadeIn();
 		return false;
 	}
 	function DP(){
@@ -259,10 +269,9 @@
 	        <li><a href="#" onclick="return clock()">考勤</a></li>
 	        <li><a href="#" onclick="return clockRecord()">考勤记录</a></li>
 	        <li><a href="#" onclick="return changePSWpage()">修改密码</a></li>
-	        <li><a href="#">我的奖惩</a></li>
+	        <li><a href="#" onclick="return bfManage()">我的奖惩</a></li>
 	        <li><a href="#" onclick="return DP()">部门职位</a></li>
 	        <li><a href="#" onclick="return wages()">我的薪资</a></li>
-	        <li><a href="#">其他</a></li>
 	        <li><a href="${pageContext.request.contextPath}/user/toLogin">退出登录</a></li>
 	      </ul>
 	    </div>
@@ -280,6 +289,53 @@
 						<h1 id="h1"></h1>
 						<h1 id="h2"></h1>
 						<h1 id="txt"></h1>
+					</div>
+					
+					<!-- 我的奖惩 -->
+					<div id="bfManage" class="allpage">
+						<form action="${pageContext.request.contextPath}/employee/findBonus" method="post">
+							<select name="yearb" id="yearb">
+								<option value="2018">2018</option>
+							</select>年
+							<select name="monthb" id="monthb">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+							</select>月
+							<input type="submit" class="btn btn-success" value="查询">
+						</form>
+						<table id="table-5" align="center">
+							<tr>
+								<th>编号</th>
+								<th>奖惩缘由</th>
+								<th>奖惩时间</th>
+								<th>奖惩金额</th>
+								<th>奖惩类型</th>
+							</tr>
+							<c:if test="${empty sessionScope.bFsByMonth}">
+								<tr><td colspan="6">本月暂无奖惩记录</td></tr>
+							</c:if>
+							<c:if test="${not empty sessionScope.bFsByMonth}">
+								<c:forEach items="${sessionScope.bFsByMonth}" var="b">
+									<tr>
+										<td>${b.bfId}</td>
+										<td>${b.msg}</td>
+										<td>${b.year}-${b.month+1}-${b.day}</td>
+										<td>${b.money}</td>
+										<td>${b.type==0?'罚':'奖'}</td>
+									</tr>
+								</c:forEach>
+							</c:if>
+						</table>
 					</div>
 					
 					<!-- 考勤 -->

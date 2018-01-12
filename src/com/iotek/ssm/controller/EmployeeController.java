@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.iotek.ssm.entity.BonusForfeit;
 import com.iotek.ssm.entity.ClockRecord;
 import com.iotek.ssm.entity.Info;
 import com.iotek.ssm.entity.User;
@@ -45,11 +46,21 @@ public class EmployeeController {
 	private WagesService wagesService;
 	@Autowired
 	private BonusForfeitService bfService;
+	@RequestMapping("findBonus")
+	public String findBonus(HttpSession session,Model model,Integer yearb,Integer monthb) {
+		model.addAttribute("toBonus", "toBonus");
+		User user = (User) session.getAttribute("nowUser");
+		List<BonusForfeit> bFsByMonth = bfService.queryBFsByUser(user.getuId(), yearb, monthb);
+		session.setAttribute("bFsByMonth", bFsByMonth);
+		session.setAttribute("yearb", yearb);
+		session.setAttribute("monthb", monthb);
+		return "employee/index";
+	}
 	@RequestMapping("findWages")
 	public String findWages(HttpSession session,Model model,Integer year,Integer month) {
 		model.addAttribute("toWages", "toWages");
 		User user = (User) session.getAttribute("nowUser");
-		Wages wages = wagesService.findWagesByuIdYearMonth(user.getuId(), year, month);
+		Wages wages = wagesService.findWagesByuIdYearMonth(user.getuId(), year, month-1);
 		session.setAttribute("wages", wages);
 		session.setAttribute("yearw", year);
 		session.setAttribute("monthw", month);
