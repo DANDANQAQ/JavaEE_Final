@@ -72,6 +72,26 @@ public class AdminController {
 		binder.registerCustomEditor(Date.class, 
 				new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
 	}
+	@RequestMapping("fire")
+	public String fire(Model model,Integer uId,HttpSession session) {
+		model.addAttribute("toEMP", "toEMP");
+		Info info = infoService.queryInfoByuId(uId);
+		if(info == null) {
+			return "admin/index";
+		}
+		info.setDept(null);
+		info.setPosition(null);
+		info.setType(4);
+		info.setMsg("ÒÑ¿ª³ý");
+		infoService.updateInfo(info);
+		User user = userService.queryUserById(uId);
+		user.setType(4);
+		userService.updateUser(user);
+		List<Info> infos = infoService.queryInfosByNotServingStaff();
+		session.setAttribute("infos", infos);
+		session.setAttribute("emp", 2);
+		return "admin/index";
+	}
 	@RequestMapping("clockEmp")
 	public String clockEmp(HttpSession session,Model model,Integer uId,Integer yearc,Integer monthc) {
 		model.addAttribute("toClockEmp", "toClockEmp");

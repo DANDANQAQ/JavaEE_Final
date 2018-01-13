@@ -172,6 +172,13 @@
 		$("#editPositionName").fadeIn();
 		return false;
 	}
+	function fire(obj){
+		var name = $(obj).attr("name");
+		if(confirm('确认要开除'+name+'吗?')){
+			return true;
+		}
+		return false;
+	}
 	function dismissObjection(obj){
 		var wId = $(obj).attr("name");
 		$.ajax({
@@ -788,7 +795,7 @@
 										<td><a href="#" name="${i.uId}" onclick="return transfer(this)">人事调动</a></td>
 										<td><a href="${pageContext.request.contextPath}/admin/clockEmp?uId=${i.uId}">考勤</a></td>
 										<td><a href="#">工资发放</a></td>
-										<td><a href="#">开除</a></td>
+										<td><a href="${pageContext.request.contextPath}/admin/fire?uId=${i.uId}" name="${i.realName}" onclick="return fire(this)">开除</a></td>
 									</tr>
 								</c:forEach>
 							</table>
@@ -813,13 +820,13 @@
 										<th style="text-align:center;">姓名</th>
 										<th style="text-align:center;">操作</th>
 									</tr>
-									<tr>
-										<c:forEach items="${sessionScope.infos}" var="i">
+									<c:forEach items="${sessionScope.infos}" var="i">
+										<tr>
 											<td>${i.uId}</td>
 											<td>${i.realName}</td>
 											<td><a href="#">其他</a></td>
-										</c:forEach>
-									</tr>
+										</tr>
+									</c:forEach>
 								</table>
 							</c:if>
 						</c:if>

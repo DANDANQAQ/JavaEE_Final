@@ -72,7 +72,7 @@
 		left join 
 			positions p ON i.p_id=p.p_id
 		WHERE
-			i.u_id=#{uId} AND type=4
+			type=4
 	</select>	
 	<select id="queryInfoByuId" parameterType="int" resultMap="Info_dept_posi">
 		SELECT 
