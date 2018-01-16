@@ -179,6 +179,21 @@
 		}
 		return false;
 	}
+	function payoff(obj){
+		var uId = $(obj).attr("name");
+		$.ajax({
+			url:"${pageContext.request.contextPath}/admin/payoff",
+			type:"post",
+			data:{uId:uId},
+			dataType:"text",
+			success:function(data){
+				alert(data);
+			},
+			error:function(x,msg,obj){
+				alert(msg);
+			}
+		})
+	}
 	function dismissObjection(obj){
 		var wId = $(obj).attr("name");
 		$.ajax({
@@ -291,15 +306,16 @@
 			data:{tName:tName,tTime:tTime,traindId:traindId},
 			dataType:"text",
 			success:function(data){
-				if(data=='addTrain'){
-					alert('发布成功');
+				if(data=='error'){
+					alert('日期已过时');
+					return
 				}
 				$("#addTrainTable").fadeOut();
 				$("#ul-trains").append(
 					"<li><a href='#' name="+data+
 						" onclick='return editTrainTable(this)'>"+$("input[name=tName]").val()+
 						"</a><a href='#' name="+data+
-						" onclick='return delTrain(this)'>[D]</a></li>"
+						" class='a-del' onclick='return delTrain(this)'>[D]</a></li>"
 				)
 				var tName = $("input[name=tName]").val('');
 				var tTime = $("input[name=tTime]").val('');
@@ -325,6 +341,10 @@
 			data:{tId:tId,tName:tName,tTime:tTime,traindId:traindId},
 			dataType:"text",
 			success:function(data){
+				if(data=='error'){
+					alert('日期已过时');
+					return
+				}
 				if(data=='editTrain'){
 					$("#editTrainTable").hide();
 					$("#ul-trains").find("a[class='"+$("input[name=edit_tId]").val()+"']").text($("input[name=edit_tName]").val());      
@@ -395,9 +415,7 @@
 			data:{uId:uId,invitedTime:invitedTime},
 			dataType:"text",
 			success:function(data){
-				if(data=='success'){
-					alert('邀请成功');
-				}
+				alert(data);
 			},
 			error:function(x,msg,obj){
 				alert(msg);
@@ -660,6 +678,7 @@
 						<form action="${pageContext.request.contextPath}/admin/findBonus" method="post">
 							<select name="yearb" id="yearb">
 								<option value="2018">2018</option>
+								<option value="2017">2017</option>
 							</select>年
 							<select name="monthb" id="monthb">
 								<option value="1">1</option>
@@ -794,7 +813,7 @@
 										<td><a href="${pageContext.request.contextPath}/admin/findEmpMsg?uId=${i.uId}">${i.realName}</a></td>
 										<td><a href="#" name="${i.uId}" onclick="return transfer(this)">人事调动</a></td>
 										<td><a href="${pageContext.request.contextPath}/admin/clockEmp?uId=${i.uId}">考勤</a></td>
-										<td><a href="#">工资发放</a></td>
+										<td><a href="#" name="${i.uId}" onclick="return payoff(this)">工资发放</a></td>
 										<td><a href="${pageContext.request.contextPath}/admin/fire?uId=${i.uId}" name="${i.realName}" onclick="return fire(this)">开除</a></td>
 									</tr>
 								</c:forEach>
@@ -840,6 +859,7 @@
 									<form action="${pageContext.request.contextPath}/admin/clockEmp" method="post">
 										<select name="yearc" id="yearc">
 											<option value="2018">2018</option>
+											<option value="2017">2017</option>
 										</select>年
 										<select name="monthc" id="monthc">
 											<option value="1">1</option>
@@ -936,6 +956,7 @@
 						<form action="${pageContext.request.contextPath}/admin/findWages" method="post">
 							<select name="year" id="year">
 								<option value="2018">2018</option>
+								<option value="2017">2017</option>
 							</select>年
 							<select name="month" id="month">
 								<option value="1">1</option>

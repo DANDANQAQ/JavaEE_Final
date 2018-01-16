@@ -321,6 +321,7 @@
 						<form action="${pageContext.request.contextPath}/employee/findBonus" method="post">
 							<select name="yearb" id="yearb">
 								<option value="2018">2018</option>
+								<option value="2017">2017</option>
 							</select>年
 							<select name="monthb" id="monthb">
 								<option value="1">1</option>
@@ -424,6 +425,7 @@
 									<form action="${pageContext.request.contextPath}/employee/findWages" method="post">
 										<select name="year" id="yearw">
 											<option value="2018">2018</option>
+											<option value="2017">2017</option>
 										</select>年
 										<select name="month" id="monthw">
 											<option value="1">1</option>
@@ -492,6 +494,7 @@
 									<form action="${pageContext.request.contextPath}/employee/clockRecord" method="post">
 										<select name="year" id="year">
 											<option value="2018">2018</option>
+											<option value="2017">2017</option>
 										</select>年
 										<select name="month" id="month">
 											<option value="1">1</option>

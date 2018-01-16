@@ -18,12 +18,7 @@ import com.iotek.ssm.entity.Wages;
 import com.iotek.ssm.entity.WagesRecord;
 import com.iotek.ssm.service.BonusForfeitService;
 import com.iotek.ssm.service.ClockRecordService;
-import com.iotek.ssm.service.DepartmentService;
-import com.iotek.ssm.service.EmploymentService;
 import com.iotek.ssm.service.InfoService;
-import com.iotek.ssm.service.InterviewService;
-import com.iotek.ssm.service.PositionService;
-import com.iotek.ssm.service.TrainService;
 import com.iotek.ssm.service.WagesRecordService;
 import com.iotek.ssm.service.WagesService;
 
@@ -31,17 +26,7 @@ import com.iotek.ssm.service.WagesService;
 @Controller
 public class EmployeeController {
 	@Autowired
-	private TrainService trainService;
-	@Autowired
-	private DepartmentService departmentService;
-	@Autowired
 	private InfoService infoService;
-	@Autowired
-	private InterviewService interviewService;
-	@Autowired
-	private EmploymentService employementService;
-	@Autowired
-	private PositionService positionService;
 	@Autowired
 	private ClockRecordService clockRecordService;
 	@Autowired

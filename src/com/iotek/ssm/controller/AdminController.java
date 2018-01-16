@@ -72,8 +72,36 @@ public class AdminController {
 		binder.registerCustomEditor(Date.class, 
 				new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
 	}
-	@RequestMapping("fire")
-	public String fire(Model model,Integer uId,HttpSession session) {
+	@RequestMapping(value="payoff",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String payoff(Integer uId) {
+		Calendar now = Calendar.getInstance();
+		int year = now.get(Calendar.YEAR);
+		int month = now.get(Calendar.MONTH);
+		if(month == 0) {
+			year--;
+			month = 11;
+		}else {
+			month--;
+		}
+		Wages wages = wagesService.findWagesByuIdYearMonth(uId, year, month);
+		if(wages == null) {
+			return "该员工上月没工资记录";
+		}
+		WagesRecord wagesRecord = wrService.queryWagesRecordBywId(wages.getwId());
+		if(wagesRecord == null) {
+			wagesRecord = new WagesRecord(0, uId, wages.getwId(), 0, 0, null, 0);
+			wrService.addWagesRecord(wagesRecord);
+		}
+		if(wagesRecord.getPay() == 1){
+			return "该员工上月工资已发放";
+		}
+		wagesRecord.setPay(1);
+		wrService.updateWagesRecord(wagesRecord);
+		return "发放成功!";
+	}
+		@RequestMapping("fire")
+		public String fire(Model model,Integer uId,HttpSession session) {
 		model.addAttribute("toEMP", "toEMP");
 		Info info = infoService.queryInfoByuId(uId);
 		if(info == null) {
@@ -226,6 +254,10 @@ public class AdminController {
 	@RequestMapping("addTrain")
 	@ResponseBody
 	public String addTrain(Model model,HttpSession session,String tName,Date tTime,Integer traindId) {
+		int compareTo = tTime.compareTo(new Date());
+		if(compareTo < 0) {
+			return "error";
+		}
 		Train train = new Train(0, tName, tTime, new Department(traindId, null, null, null));
 		trainService.addTrain(train);
 		List<Train> trains = trainService.queryAllTrains();
@@ -235,6 +267,10 @@ public class AdminController {
 	@RequestMapping("editTrainAjax")
 	@ResponseBody
 	public String editTrainAjax(Model model,HttpSession session,Integer tId,String tName,Date tTime,Integer traindId) {
+		int compareTo = tTime.compareTo(new Date());
+		if(compareTo < 0) {
+			return "error";
+		}
 		Train train = trainService.queryTrainBytId(tId);
 		train.settName(tName);
 		train.settTime(tTime);

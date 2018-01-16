@@ -1,5 +1,7 @@
 package com.iotek.ssm.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -134,11 +136,23 @@ public class loginController {
 		if(uId == null || invitedTime == null) {
 			return null;
 		}
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date parse = null;
+		try {
+			parse = simpleDateFormat.parse(invitedTime);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+		int compareTo = parse.compareTo(new Date());
+		if(compareTo < 0) {
+			return "时间已过期";
+		}
 		Interview interview = interviewService.queryInterviewByuId(uId);
 		interview.setInvited(1);
 		interview.setInvitedTime(invitedTime);
 		interviewService.updateInterview(interview);
-		return "success";
+		return "邀请成功";
 	}
 	@RequestMapping(value="delInfoAjax",produces = "text/html;charset=UTF-8")
 	@ResponseBody
